@@ -605,15 +605,15 @@ async function getCallMedia(type){
  return navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"?{facingMode:"user",width:{ideal:640},height:{ideal:480}}:false});
 }
 function initPeer(callRef,role,type){
- const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]});callPeer=pc;remoteCallStream=new MediaStream();let seenRemoteSdp="";
+ const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]});callPeer=pc;remoteCallStream=new MediaStream();pc._lastRemoteSdp="";
  localCallStream.getTracks().forEach(t=>pc.addTrack(t,localCallStream));pc.ontrack=e=>{e.streams[0]?.getTracks().forEach(t=>{if(!remoteCallStream.getTracks().some(x=>x.id===t.id))remoteCallStream.addTrack(t)});attachCallMedia(type==="video")};
  pc.onconnectionstatechange=()=>{if(pc.connectionState==="connected"){setCallStatus("Connected");if(currentCall?.status==="accepted")startCallDuration();if(callReconnectTimer){clearTimeout(callReconnectTimer);callReconnectTimer=null}}if(["failed","disconnected"].includes(pc.connectionState)){setCallStatus("Connection interrupted. Reconnecting…");if(role==="caller"&&!callReconnectTimer)callReconnectTimer=setTimeout(async()=>{callReconnectTimer=null;if(!currentCall||callPeer!==pc||pc.connectionState==="connected")return;try{pc.restartIce();const offer=await pc.createOffer({iceRestart:true});await pc.setLocalDescription(offer);await updateDoc(callRef,{offer:{type:offer.type,sdp:offer.sdp}});setCallStatus("Reconnecting…")}catch(e){setCallStatus("Network reconnect failed. Check your connection.")}},1800)}};
  const ownPath=role==="caller"?"callerCandidates":"calleeCandidates",otherPath=role==="caller"?"calleeCandidates":"callerCandidates";
  pc.onicecandidate=e=>{if(e.candidate)addDoc(collection(db,"calls",callRef.id,ownPath),e.candidate.toJSON()).catch(x=>say("Could not send call network data: "+err(x)))};
  stopRemoteCandidates=onSnapshot(collection(db,"calls",callRef.id,otherPath),snap=>snap.docChanges().forEach(ch=>{if(ch.type==="added"){const candidate=new RTCIceCandidate(ch.doc.data());if(pc.remoteDescription)pc.addIceCandidate(candidate).catch(()=>{});else pendingRemoteCandidates.push(candidate)}}));
  stopCallDoc=onSnapshot(callRef,async snap=>{if(!snap.exists())return;const data=snap.data();
-  if(role==="caller"&&data.answer?.sdp&&data.answer.sdp!==seenRemoteSdp){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));seenRemoteSdp=data.answer.sdp;for(const x of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(x).catch(()=>{});setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
-  if(role==="callee"&&data.offer?.sdp&&data.offer.sdp!==seenRemoteSdp&&data.status==="accepted"){try{await pc.setRemoteDescription(new RTCSessionDescription(data.offer));seenRemoteSdp=data.offer.sdp;for(const x of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(x).catch(()=>{});const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await updateDoc(callRef,{answer:{type:answer.type,sdp:answer.sdp}})}catch(e){say("Call recovery failed: "+err(e))}}
+  if(role==="caller"&&data.answer?.sdp&&data.answer.sdp!==pc._lastRemoteSdp){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));pc._lastRemoteSdp=data.answer.sdp;for(const x of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(x).catch(()=>{});setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
+  if(role==="callee"&&data.offer?.sdp&&data.offer.sdp!==pc._lastRemoteSdp&&data.status==="accepted"){try{await pc.setRemoteDescription(new RTCSessionDescription(data.offer));pc._lastRemoteSdp=data.offer.sdp;for(const x of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(x).catch(()=>{});const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await updateDoc(callRef,{answer:{type:answer.type,sdp:answer.sdp}})}catch(e){say("Call recovery failed: "+err(e))}}
   if(data.status==="accepted"){stopCallRingtone();currentCall.status="accepted";setCallStatus("Connecting…");if(pc.connectionState==="connected")startCallDuration()}if(data.status==="rejected"){stopCallRingtone();say("Call declined");cleanupCall()}if(data.status==="missed"){stopCallRingtone();say("Missed call");cleanupCall()}if(data.status==="ended"){stopCallRingtone();say("Call ended");cleanupCall()}
  });return pc;
 }
@@ -657,7 +657,7 @@ async function acceptIncomingCall(){
   const peer=initPeer(ref,"callee",data.type||"audio");
   showCallPanel(data.type==="video"?"video":"audio",data.callerName||"Call","Connecting…",data.type==="video");
   attachCallMedia(data.type==="video");
-  await peer.setRemoteDescription(new RTCSessionDescription(data.offer));for(const candidate of pendingRemoteCandidates.splice(0))await peer.addIceCandidate(candidate).catch(()=>{});
+  await peer.setRemoteDescription(new RTCSessionDescription(data.offer));peer._lastRemoteSdp=data.offer.sdp;for(const candidate of pendingRemoteCandidates.splice(0))await peer.addIceCandidate(candidate).catch(()=>{});
   const answer=await peer.createAnswer();await peer.setLocalDescription(answer);
   await updateDoc(ref,{answer:{type:answer.type,sdp:answer.sdp},status:"accepted",acceptedAt:serverTimestamp()});
  }catch(e){say("Could not accept call: "+err(e));cleanupCall()}
