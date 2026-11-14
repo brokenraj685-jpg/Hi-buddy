@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hi-buddy-calls-history-v6';
+const CACHE_NAME = 'hi-buddy-call-controls-v7';
 const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
