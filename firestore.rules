@@ -12,28 +12,42 @@ service cloud.firestore {
     }
 
     function allowsNewChats(uid) {
-      return !exists(/databases/$(database)/documents/privateUsers/$(uid))
-        || get(/databases/$(database)/documents/privateUsers/$(uid)).data
-          .get('preferences', {}).get('privacy', {}).get('allowNewChats', true) == true;
+      let privatePath = /databases/$(database)/documents/privateUsers/$(uid);
+      return !exists(privatePath)
+        || get(privatePath).data.get('preferences', {}).get('privacy', {}).get('allowNewChats', true) == true;
     }
 
-    // Public directory: only basic discovery fields should be kept here.
+    // Unique phone and username reservations. Claims cannot be overwritten or deleted by clients.
+    match /accountClaims/{claimId} {
+      allow read: if loggedIn() && resource.data.uid == request.auth.uid;
+      allow create: if loggedIn()
+        && !exists(/databases/$(database)/documents/accountClaims/$(claimId))
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'type', 'createdAt'])
+        && (
+          (claimId.matches('phone_[0-9]{10}') && request.resource.data.type == 'phone')
+          || (claimId.matches('username_[a-z0-9_]{3,20}') && request.resource.data.type == 'username')
+        );
+      allow update, delete: if false;
+    }
+
+    // Public directory contains only the fields intentionally shown on user profiles.
     match /profiles/{uid} {
       allow read: if true;
-
       allow create: if loggedIn()
-        && request.auth.uid == uid;
-
+        && request.auth.uid == uid
+        && request.resource.data.username is string
+        && exists(/databases/$(database)/documents/accountClaims/$(concat('username_', request.resource.data.username)))
+        && get(/databases/$(database)/documents/accountClaims/$(concat('username_', request.resource.data.username))).data.uid == request.auth.uid;
       allow update: if loggedIn()
-        && request.auth.uid == uid;
-
+        && request.auth.uid == uid
+        && request.resource.data.username == resource.data.username;
       allow delete: if false;
     }
 
     // Private account preferences and per-user block list.
     match /privateUsers/{uid} {
-      allow read, write: if loggedIn()
-        && request.auth.uid == uid;
+      allow read, write: if loggedIn() && request.auth.uid == uid;
 
       match /blocked/{blockedUid} {
         allow read, delete: if loggedIn()
@@ -80,28 +94,23 @@ service cloud.firestore {
         function chatMembers() {
           return get(/databases/$(database)/documents/chats/$(chatId)).data.members;
         }
-
         function isMember() {
           return loggedIn()
             && chatMembers() is list
             && chatMembers().hasAny([request.auth.uid]);
         }
-
         function otherMember() {
           return chatMembers()[0] == request.auth.uid
             ? chatMembers()[1]
             : chatMembers()[0];
         }
-
         allow read: if isMember();
-
         allow create: if isMember()
           && !isBlockedBetween(request.auth.uid, otherMember())
           && request.resource.data.sender == request.auth.uid
           && request.resource.data.text is string
           && request.resource.data.text.size() > 0
           && request.resource.data.text.size() <= 5000;
-
         allow update, delete: if false;
       }
     }
