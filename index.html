@@ -327,6 +327,8 @@ function tab(t){
  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
  $("#workspace").classList.remove("chat-open");$("#chat").classList.add("hidden");$("#empty").classList.add("hidden");$("#page").classList.remove("hidden");
  if(t==="chats"){active=null;$("#page").classList.add("hidden");$("#empty").classList.remove("hidden");return}
+ // Make the main page visible on mobile for Settings, Updates and Calls
+ $("#workspace").classList.add("chat-open");
  if(t==="updates")$("#page").innerHTML='<h2>Updates</h2><div class="settings-card"><b>Updates are not available yet</b><p class="tiny">Status publishing and viewing need additional backend features.</p></div>';
  if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><div class="settings-card"><b>Calling is not available yet</b><p class="tiny">Voice and video calling need a calling service and permissions.</p></div>';
  if(t==="settings")settingsHome();
