@@ -37,8 +37,8 @@ service cloud.firestore {
       allow create: if loggedIn()
         && request.auth.uid == uid
         && request.resource.data.username is string
-        && exists(/databases/$(database)/documents/accountClaims/$(concat('username_', request.resource.data.username)))
-        && get(/databases/$(database)/documents/accountClaims/$(concat('username_', request.resource.data.username))).data.uid == request.auth.uid;
+        && exists(/databases/$(database)/documents/accountClaims/$(('username_' + request.resource.data.username)))
+        && get(/databases/$(database)/documents/accountClaims/$(('username_' + request.resource.data.username))).data.uid == request.auth.uid;
       allow update: if loggedIn()
         && request.auth.uid == uid
         && request.resource.data.username == resource.data.username;
