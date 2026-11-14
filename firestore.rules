@@ -90,12 +90,16 @@ service cloud.firestore {
         && request.resource.data.callerUid == request.auth.uid
         && request.resource.data.calleeUid is string
         && request.resource.data.calleeUid != request.auth.uid
+        && request.resource.data.chatId is string
+        && exists(/databases/$(database)/documents/chats/$(request.resource.data.chatId))
+        && get(/databases/$(database)/documents/chats/$(request.resource.data.chatId)).data.members.hasAll([request.auth.uid, request.resource.data.calleeUid])
         && request.resource.data.type in ['audio', 'video']
         && request.resource.data.status == 'ringing'
-        && request.resource.data.keys().hasOnly(['callerUid','calleeUid','callerName','calleeName','type','status','offer','createdAt']);
+        && request.resource.data.keys().hasOnly(['callerUid','calleeUid','chatId','callerName','calleeName','type','status','createdAt']);
       allow update: if isCallMember()
         && request.resource.data.callerUid == resource.data.callerUid
         && request.resource.data.calleeUid == resource.data.calleeUid
+        && request.resource.data.chatId == resource.data.chatId
         && request.resource.data.type == resource.data.type
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','offer','answer'])
         && request.resource.data.status in ['ringing','accepted','rejected','ended']
