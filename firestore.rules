@@ -105,7 +105,7 @@ service cloud.firestore {
         && request.resource.data.calleeUid == resource.data.calleeUid
         && request.resource.data.chatId == resource.data.chatId
         && request.resource.data.type == resource.data.type
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','offer','answer','acceptedAt','endedAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','offer','answer','acceptedAt','endedAt','durationSeconds'])
         && request.resource.data.status in ['ringing','accepted','rejected','missed','ended']
         && (request.auth.uid == resource.data.callerUid
           ? !request.resource.data.diff(resource.data).affectedKeys().hasAny(['answer','acceptedAt'])
