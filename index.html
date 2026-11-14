@@ -289,7 +289,7 @@ function settingsHome(){
  <section class="settings-group"><div class="settings-label">SUPPORT</div><div class="settings-card">${row("ⓘ","About HI BUDDY","App version and backend","about")}${row("✉","Help & support","Help using the app","help")}${row("↪","Log out","Sign out from this device","logout")}</div></section>`;
  $("#page").querySelectorAll("[data-setting]").forEach(el=>el.addEventListener("click",()=>settingAction(el.dataset.setting)));
 }
-async async function savePrivacySettings(){
+async async async function savePrivacySettings(){
  const host=$("#settings-detail"),privacy={};
  host.querySelectorAll("[data-privacy]").forEach(el=>privacy[el.dataset.privacy]=el.checked);
  try{await setDoc(doc(db,"privateUsers",user.uid),{preferences:{...(profile?.preferences||{}),privacy}},{merge:true});profile={...profile,preferences:{...(profile?.preferences||{}),privacy}};say("Privacy preferences saved");}
@@ -300,7 +300,7 @@ function settingAction(which){
  page.innerHTML=`<div class="settings-subpage"><div class="settings-subhead"><button type="button" class="settings-back" id="settings-back" aria-label="Back to settings">‹</button><div><b>${({profile:"Profile",security:"Account & security",privacy:"Privacy",blocked:"Blocked contacts",chats:"Chat settings",storage:"Storage & data",appearance:"Appearance",notifications:"Notifications",language:"Language",about:"About HI BUDDY",help:"Help & support",logout:"Log out"})[which]||"Settings"}</b><small>HI BUDDY settings</small></div></div><div id="settings-detail" class="settings-detail-host"></div></div>`;
  const box=$("#settings-detail");
  $("#settings-back").onclick=settingsHome;
- if(which==="appearance"){toggleTheme();settingAction("appearance");say("Theme updated");return}
+ if(which==="appearance"){const current=document.documentElement.dataset.theme==="dark"?"Dark":"Light";box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Appearance</div><p>Choose the theme for this device.</p><div class="settings-info"><span>Current theme</span><b id="current-theme">${current}</b></div><button class="primary-setting-btn" id="toggle-appearance">Switch to ${current==="Dark"?"Light":"Dark"} mode</button></div>`;$("#toggle-appearance").onclick=()=>{toggleTheme();const now=document.documentElement.dataset.theme==="dark"?"Dark":"Light";$("#current-theme").textContent=now;$("#toggle-appearance").textContent="Switch to "+(now==="Dark"?"Light":"Dark")+" mode";say("Appearance saved")};return}
  if(which==="logout"){if(confirm("Log out from HI BUDDY on this device?"))signOut(auth).catch(e=>say(err(e)));return}
  if(which==="profile"){
   const phone=(user?.email||"").replace("@hibuddy.invalid","");
