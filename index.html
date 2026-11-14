@@ -522,7 +522,7 @@ function tab(t){
  // Make the main page visible on mobile for Settings, Updates and Calls
  $("#workspace").classList.add("chat-open");
  if(t==="updates")renderUpdates();
- if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><p class="page-sub">Voice and video calls are available from the call buttons inside any one-to-one chat.</p><div class="settings-card"><b>How to call</b><p class="tiny">Open Chats, select a person, then tap the phone icon for voice or the camera icon for video. Allow microphone/camera access when your browser asks.</p><p class="tiny">Keep HI BUDDY open while calling. Calls use peer-to-peer WebRTC; some mobile networks may need a TURN relay for reliable connection.</p></div>';
+ if(t==="calls")renderCallHistory();
  if(t==="settings")settingsHome();
 }
 
