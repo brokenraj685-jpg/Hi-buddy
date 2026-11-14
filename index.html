@@ -278,7 +278,7 @@ import{getFirestore,doc,setDoc,getDoc,collection,query,where,onSnapshot,addDoc,s
 const cfg={apiKey:"AIzaSyASzfkpNVtanzi2XQIBYmvxXPTUcqZ6NBM",authDomain:"raj-11988.firebaseapp.com",databaseURL:"https://raj-11988-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"raj-11988",storageBucket:"raj-11988.firebasestorage.app",messagingSenderId:"1080242151967",appId:"1:1080242151967:web:1cc8fb6fc8a9e94b2e2b2a",measurementId:"G-CPHXNZQFNN"};
 const fb=initializeApp(cfg),auth=getAuth(fb),db=getFirestore(fb),$=s=>document.querySelector(s);
 await setPersistence(auth,browserLocalPersistence);
-let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set(),callRingTimer=null;
+let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set(),callRingTimer=null,pendingRemoteCandidates=[];
 function say(t){let e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
 function email(p){return p+"@hibuddy.invalid"}
 function finishSignupGate(){if(releaseSignupGate)releaseSignupGate();releaseSignupGate=null;signupGate=null}
@@ -518,11 +518,11 @@ function initPeer(callRef,role,type){
  const ownPath=role==="caller"?"callerCandidates":"calleeCandidates";
  const otherPath=role==="caller"?"calleeCandidates":"callerCandidates";
  pc.onicecandidate=e=>{if(e.candidate)addDoc(collection(db,"calls",callRef.id,ownPath),e.candidate.toJSON()).catch(x=>say("Could not send call network data: "+err(x)))};
- stopRemoteCandidates=onSnapshot(collection(db,"calls",callRef.id,otherPath),snap=>snap.docChanges().forEach(change=>{if(change.type==="added")pc.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(()=>{})}));
+ stopRemoteCandidates=onSnapshot(collection(db,"calls",callRef.id,otherPath),snap=>snap.docChanges().forEach(change=>{if(change.type==="added"){const candidate=new RTCIceCandidate(change.doc.data());if(pc.remoteDescription)pc.addIceCandidate(candidate).catch(()=>{});else pendingRemoteCandidates.push(candidate)}}));
  stopCallDoc=onSnapshot(callRef,async snap=>{
   if(!snap.exists())return;
   const data=snap.data();
-  if(role==="caller"&&data.answer&&!pc.currentRemoteDescription){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
+  if(role==="caller"&&data.answer&&!pc.currentRemoteDescription){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));for(const candidate of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(candidate).catch(()=>{});setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
   if(data.status==="accepted")setCallStatus("Connecting…");
   if(data.status==="rejected"){say("Call declined");cleanupCall()}
   if(data.status==="ended"){say("Call ended");cleanupCall()}
@@ -569,7 +569,7 @@ async function acceptIncomingCall(){
   const peer=initPeer(ref,"callee",data.type||"audio");
   showCallPanel(data.type==="video"?"video":"audio",data.callerName||"Call","Connecting…",data.type==="video");
   attachCallMedia(data.type==="video");
-  await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
+  await peer.setRemoteDescription(new RTCSessionDescription(data.offer));for(const candidate of pendingRemoteCandidates.splice(0))await peer.addIceCandidate(candidate).catch(()=>{});
   const answer=await peer.createAnswer();await peer.setLocalDescription(answer);
   await updateDoc(ref,{answer:{type:answer.type,sdp:answer.sdp},status:"accepted"});
  }catch(e){say("Could not accept call: "+err(e));cleanupCall()}
@@ -592,7 +592,7 @@ function cleanupCall(){
  if(callPeer){callPeer.ontrack=null;callPeer.onicecandidate=null;callPeer.close();callPeer=null}
  if(localCallStream){localCallStream.getTracks().forEach(t=>t.stop());localCallStream=null}
  if(remoteCallStream){remoteCallStream.getTracks().forEach(t=>t.stop());remoteCallStream=null}
- currentCall=null;$("#call-overlay").classList.add("hidden");$("#call-overlay").innerHTML="";
+ pendingRemoteCandidates=[];currentCall=null;$("#call-overlay").classList.add("hidden");$("#call-overlay").innerHTML="";
 }
 
 function toggleTheme(){let next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("hibuddy-theme",next)}catch{}}
