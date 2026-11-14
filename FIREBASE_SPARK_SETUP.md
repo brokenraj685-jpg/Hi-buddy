@@ -33,3 +33,14 @@ Do not create a new Firebase project or delete any Firestore collections.
 ## Existing data
 
 On a user's next sign-in, the app attempts to move any legacy `photo` and `about` fields from their public profile document into their private user document, then removes those fields from the public profile. This requires the existing rules to permit that user to update their own profile and write their own `privateUsers/{uid}` document, as in the rules provided for this project.
+
+
+## Voice and video calling
+
+- Open a one-to-one chat and tap the phone icon for voice or the camera icon for video.
+- Calls use browser WebRTC media and Firestore signalling documents in `calls/{callId}`, with separate caller/callee ICE-candidate subcollections.
+- Both participants must be signed in, and the browser must grant microphone/camera permission. The app must be served over HTTPS.
+- Calls ring for up to 45 seconds, can be accepted or declined, and can be ended from the call controls.
+- The app uses public STUN discovery servers only. Direct peer-to-peer calling works on many networks, but some carrier/Wi-Fi NATs require a TURN relay; a TURN service and credentials are not included in this Spark-only setup. A TURN relay is needed for more reliable cross-network calling.
+- Publish the updated `firestore.rules` file before testing calls. The rules restrict call records and ICE candidates to the two call participants.
+- Keep the app open during calls. Background incoming-call push notifications are not configured.
