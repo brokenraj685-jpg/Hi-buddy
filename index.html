@@ -529,6 +529,7 @@ function tab(t){
 
 function callDateValue(v){return v?.toDate?v.toDate():v instanceof Date?v:(typeof v==="number"?new Date(v):null)}
 function callWhen(v){const d=callDateValue(v);return d?d.toLocaleString([],{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"Just now"}
+function callDuration(c){const n=Number(c.durationSeconds||0);return n?(" · "+Math.floor(n/60)+":"+String(n%60).padStart(2,"0")):""}
 function callLabel(c){
  if(c.status==="missed")return c.calleeUid===user.uid?"Missed call":"No answer";
  if(c.status==="rejected")return c.callerUid===user.uid?"Call declined":"You declined";
@@ -552,7 +553,7 @@ function drawCallHistory(){
   const missed=c.status==="missed"||(c.status==="rejected"&& !outgoing);
   const icon=c.type==="video"?"▣":"☎";
   const sub=(outgoing?"Outgoing":"Incoming")+" · "+(c.type==="video"?"Video":"Voice")+" · "+callLabel(c);
-  return '<article class="call-history-row"><div class="call-history-avatar">'+esc(ini(otherName)||"HB")+'</div><div class="call-history-info"><b>'+esc(otherName)+'</b><span class="'+(missed?"call-missed":"")+'">'+esc(sub)+'</span><small>'+esc(callWhen(c.createdAt))+'</small></div><div class="call-history-actions"><span class="call-type-icon">'+icon+'</span><button class="icon-btn call-again" data-call-chat="'+esc(c.chatId||"")+'" data-call-type="'+(c.type==="video"?"video":"audio")+'" title="Call again">↗</button></div></article>';
+  return '<article class="call-history-row"><div class="call-history-avatar">'+esc(ini(otherName)||"HB")+'</div><div class="call-history-info"><b>'+esc(otherName)+'</b><span class="'+(missed?"call-missed":"")+'">'+esc(sub)+'</span><small>'+esc(callWhen(c.createdAt)+callDuration(c))+'</small></div><div class="call-history-actions"><span class="call-type-icon">'+icon+'</span><button class="icon-btn call-again" data-call-chat="'+esc(c.chatId||"")+'" data-call-type="'+(c.type==="video"?"video":"audio")+'" title="Call again">↗</button></div></article>';
  }).join(""):'<div class="call-history-empty"><div class="call-empty-icon">☎</div><b>No calls here yet</b><p>Your voice and video call history will appear here.</p></div>';
  host.querySelectorAll("[data-call-chat]").forEach(b=>b.onclick=()=>{const c=chats.find(x=>x.id===b.dataset.callChat);if(!c)return say("Open this person's chat first");openChat(c.id);setTimeout(()=>startCall(b.dataset.callType),250)});
 }
@@ -572,8 +573,7 @@ function callOtherUser(){
 function showCallPanel(kind,title,status,showVideo=true,incoming=false,meta={}){
  const host=$("#call-overlay");if(!host)return;
  host.classList.remove("hidden");
- host.innerHTML='<section class="call-panel call-panel-pro"><div class="call-topline"><span class="call-live-dot"></span><span>'+(incoming?"INCOMING CALL": "HI BUDDY CALL")+'</span><button class="call-minimize" id="call-minimize" title="Close call panel">⌄</button></div><div class="call-person"><div class="call-person-avatar">'+esc(ini(title)||"HB")+'</div><h3>'+esc(title)+'</h3><div class="call-kind">'+(showVideo?"▣ Video call":"☎ Voice call")+'</div><p id="call-status" class="call-status">'+esc(status)+'</p></div><div class="call-video-stage">'+(showVideo?'<video id="call-remote-video" class="call-remote-video" autoplay playsinline></video><video id="call-local-video" class="call-local-video" autoplay muted playsinline></video>':'<div class="call-audio-wave"><i></i><i></i><i></i><i></i><i></i></div><audio id="call-remote-audio" autoplay></audio>')+'</div><div class="call-controls">'+(incoming?'<button class="call-control end" id="decline-call" title="Decline">✕</button><button class="call-control accept" id="accept-call" title="Accept">☎</button>':'<button class="call-control" id="mute-call" title="Mute microphone">🎙</button>'+(showVideo?'<button class="call-control" id="camera-call" title="Turn camera off">▣</button>':'')+'<button class="call-control end" id="end-call" title="End call">✕</button>')+'</div><div class="call-footnote">'+(incoming?"Answer only if you recognize this person.":"Your call is end-to-end peer-to-peer when a direct connection is available.")+'</div></section>';
-  $("#call-minimize").onclick=()=>{if(incoming)return;host.classList.add("hidden")};
+ host.innerHTML='<section class="call-panel call-panel-pro"><div class="call-topline"><span class="call-live-dot"></span><span>'+(incoming?"INCOMING CALL": "HI BUDDY CALL")+'</span></div><div class="call-person"><div class="call-person-avatar">'+esc(ini(title)||"HB")+'</div><h3>'+esc(title)+'</h3><div class="call-kind">'+(showVideo?"▣ Video call":"☎ Voice call")+'</div><p id="call-status" class="call-status">'+esc(status)+'</p></div><div class="call-video-stage">'+(showVideo?'<video id="call-remote-video" class="call-remote-video" autoplay playsinline></video><video id="call-local-video" class="call-local-video" autoplay muted playsinline></video>':'<div class="call-audio-wave"><i></i><i></i><i></i><i></i><i></i></div><audio id="call-remote-audio" autoplay></audio>')+'</div><div class="call-controls">'+(incoming?'<button class="call-control end" id="decline-call" title="Decline">✕</button><button class="call-control accept" id="accept-call" title="Accept">☎</button>':'<button class="call-control" id="mute-call" title="Mute microphone">🎙</button>'+(showVideo?'<button class="call-control" id="camera-call" title="Turn camera off">▣</button>':'')+'<button class="call-control end" id="end-call" title="End call">✕</button>')+'</div><div class="call-footnote">'+(incoming?"Answer only if you recognize this person.":"Your call is end-to-end peer-to-peer when a direct connection is available.")+'</div></section>';
  if(incoming){$("#decline-call").onclick=declineIncomingCall;$("#accept-call").onclick=acceptIncomingCall}
  else{
   $("#end-call").onclick=endCall;
@@ -654,7 +654,7 @@ async function acceptIncomingCall(){
   attachCallMedia(data.type==="video");
   await peer.setRemoteDescription(new RTCSessionDescription(data.offer));for(const candidate of pendingRemoteCandidates.splice(0))await peer.addIceCandidate(candidate).catch(()=>{});
   const answer=await peer.createAnswer();await peer.setLocalDescription(answer);
-  await updateDoc(ref,{answer:{type:answer.type,sdp:answer.sdp},status:"accepted"});
+  await updateDoc(ref,{answer:{type:answer.type,sdp:answer.sdp},status:"accepted",acceptedAt:serverTimestamp()});
  }catch(e){say("Could not accept call: "+err(e));cleanupCall()}
 }
 async function declineIncomingCall(){
@@ -665,7 +665,7 @@ async function declineIncomingCall(){
 async function endCall(){
  if(!currentCall)return;
  const ref=currentCall.ref;
- try{await updateDoc(ref,{status:"ended",endedAt:serverTimestamp()})}catch(e){say(err(e))}
+ try{const snap=await getDoc(ref),data=snap.exists()?snap.data():{},accepted=callDateValue(data.acceptedAt),durationSeconds=accepted?Math.max(0,Math.floor((Date.now()-accepted.getTime())/1000)):0;await updateDoc(ref,{status:"ended",endedAt:serverTimestamp(),durationSeconds})}catch(e){say(err(e))}
  cleanupCall();
 }
 function cleanupCall(){
