@@ -430,13 +430,44 @@ function settingAction(which){
  if(which==="help"){box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Help & support</div><p>For help, share the screen and exact error message with the app administrator. Never share your password or verification codes.</p></div>`;return}
  if(which==="about"){box.innerHTML=`<div class="settings-detail"><div class="detail-heading">HI BUDDY</div><p>Compact chat application using your existing Firebase Authentication and Cloud Firestore project.</p><div class="settings-info"><span>Backend</span><b>Firebase Auth + Firestore</b></div><div class="settings-info"><span>Version</span><b>1.2.0</b></div></div>`;return}
 }
+
+async function renderUpdates(){
+ $("#page").innerHTML='<h2>Status</h2><p class="page-sub">Share a photo or text update. Status remains visible for 24 hours.</p><div class="status-compose"><b>＋ Add status</b><textarea id="status-text" maxlength="700" placeholder="What would you like to share?"></textarea><input id="status-photo" type="file" accept="image/*"><button class="primary-setting-btn" id="publish-status">Share status</button></div><div id="status-feed"><div class="status-empty">Loading recent updates…</div></div>';
+ $("#publish-status").onclick=publishStatus;
+ await loadStatuses();
+}
+async function publishStatus(){
+ const textValue=$("#status-text").value.trim(),file=$("#status-photo").files?.[0];
+ if(!textValue&&!file)return say("Write something or choose a photo");
+ try{
+  let media="";
+  if(file){
+   if(!file.type.startsWith("image/"))return say("Choose an image");
+   media=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),scale=Math.min(1,900/Math.max(im.width,im.height));c.width=Math.round(im.width*scale);c.height=Math.round(im.height*scale);c.getContext("2d").drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.68))};im.onerror=reject;im.src=fr.result};fr.onerror=reject;fr.readAsDataURL(file)});
+   if(media.length>850000)return say("Photo is too large. Choose a smaller image.");
+  }
+  await addDoc(collection(db,"statuses"),{uid:user.uid,name:profile?.name||"HI BUDDY user",username:profile?.username||"",text:textValue,media,createdAt:serverTimestamp(),expiresAt:Date.now()+86400000});
+  $("#status-text").value="";$("#status-photo").value="";say("Status shared");await loadStatuses();
+ }catch(e){say(err(e))}
+}
+async function loadStatuses(){
+ const host=$("#status-feed");if(!host)return;
+ try{
+  const snap=await getDocs(query(collection(db,"statuses"),orderBy("createdAt","desc"),limit(100)));
+  const items=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>(x.expiresAt||0)>Date.now());
+  if(!items.length){host.innerHTML='<div class="status-empty">No recent statuses yet. Share the first update.</div>';return}
+  host.innerHTML=items.map(x=>'<article class="status-card"><div class="avatar">'+esc(ini(x.name||"HB"))+'</div><div class="status-content"><b>'+esc(x.name||"HI BUDDY user")+'</b><small>@'+esc(x.username||"user")+' · '+new Date(x.createdAt?.toDate?x.createdAt.toDate():Date.now()).toLocaleString()+'</small>'+(x.text?'<p>'+esc(x.text)+'</p>':'')+(x.media?'<img class="status-media" alt="Status photo" src="'+x.media+'">':'')+(x.uid===user.uid?'<button class="text-btn" type="button" data-delete-status="'+esc(x.id)+'">Delete my status</button>':'')+'</div></article>').join("");
+  host.querySelectorAll("[data-delete-status]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete this status?"))return;try{await deleteDoc(doc(db,"statuses",b.dataset.deleteStatus));say("Status deleted");loadStatuses()}catch(e){say(err(e))}});
+ }catch(e){host.innerHTML='<div class="status-empty">Could not load statuses: '+esc(err(e))+'</div>'}
+}
+
 function tab(t){
  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
  $("#workspace").classList.remove("chat-open");$("#chat").classList.add("hidden");$("#empty").classList.add("hidden");$("#page").classList.remove("hidden");
  if(t==="chats"){active=null;$("#page").classList.add("hidden");$("#empty").classList.remove("hidden");return}
  // Make the main page visible on mobile for Settings, Updates and Calls
  $("#workspace").classList.add("chat-open");
- if(t==="updates")$("#page").innerHTML='<h2>Updates</h2><div class="settings-card"><b>Updates are not available yet</b><p class="tiny">Status publishing and viewing need additional backend features.</p></div>';
+ if(t==="updates")renderUpdates();
  if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><div class="settings-card"><b>Calling is not available yet</b><p class="tiny">Voice and video calling need a calling service and permissions.</p></div>';
  if(t==="settings")settingsHome();
 }
