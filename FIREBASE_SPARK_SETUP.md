@@ -44,3 +44,13 @@ On a user's next sign-in, the app attempts to move any legacy `photo` and `about
 - The app uses public STUN discovery servers only. Direct peer-to-peer calling works on many networks, but some carrier/Wi-Fi NATs require a TURN relay; a TURN service and credentials are not included in this Spark-only setup. A TURN relay is needed for more reliable cross-network calling.
 - Publish the updated `firestore.rules` file before testing calls. The rules restrict call records and ICE candidates to the two call participants.
 - Keep the app open during calls. Background incoming-call push notifications are not configured.
+
+
+## Call history and incoming-call permissions
+
+- Calls are stored in `calls/{callId}` and shared only by the caller and callee.
+- Incoming-call listeners query calls where `calleeUid` equals the signed-in user. Call history listens separately for `callerUid` and `calleeUid`.
+- Publish the latest `firestore.rules` so Firestore can authorize participant-constrained call queries.
+- The Calls tab shows all, missed, incoming and outgoing calls. Each call row shows caller/recipient, voice/video type, outcome and time.
+- Call outcomes use `ringing`, `accepted`, `rejected`, `missed`, and `ended`. Accepted and ended timestamps are stored for history.
+- Incoming call UI is shown only while the recipient is signed in and the app is open. Background/closed-app incoming-call notifications are not configured.
