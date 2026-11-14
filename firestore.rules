@@ -77,6 +77,51 @@ service cloud.firestore {
       allow update, delete: if loggedIn() && resource.data.uid == request.auth.uid;
     }
 
+
+    // WebRTC call signalling. Only the two participants can read/update a call.
+    match /calls/{callId} {
+      function isCallMember() {
+        return loggedIn()
+          && (resource.data.callerUid == request.auth.uid
+            || resource.data.calleeUid == request.auth.uid);
+      }
+      allow read: if isCallMember();
+      allow create: if loggedIn()
+        && request.resource.data.callerUid == request.auth.uid
+        && request.resource.data.calleeUid is string
+        && request.resource.data.calleeUid != request.auth.uid
+        && request.resource.data.type in ['audio', 'video']
+        && request.resource.data.status == 'ringing'
+        && request.resource.data.keys().hasOnly(['callerUid','calleeUid','callerName','calleeName','type','status','offer','createdAt']);
+      allow update: if isCallMember()
+        && request.resource.data.callerUid == resource.data.callerUid
+        && request.resource.data.calleeUid == resource.data.calleeUid
+        && request.resource.data.type == resource.data.type
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','offer','answer'])
+        && request.resource.data.status in ['ringing','accepted','rejected','ended']
+        && (request.auth.uid == resource.data.callerUid
+          ? !request.resource.data.diff(resource.data).affectedKeys().hasAny(['answer'])
+          : !request.resource.data.diff(resource.data).affectedKeys().hasAny(['offer']));
+      allow delete: if false;
+
+      match /callerCandidates/{candidateId} {
+        allow read: if loggedIn()
+          && (get(/databases/$(database)/documents/calls/$(callId)).data.callerUid == request.auth.uid
+            || get(/databases/$(database)/documents/calls/$(callId)).data.calleeUid == request.auth.uid);
+        allow create: if loggedIn()
+          && get(/databases/$(database)/documents/calls/$(callId)).data.callerUid == request.auth.uid;
+        allow update, delete: if false;
+      }
+      match /calleeCandidates/{candidateId} {
+        allow read: if loggedIn()
+          && (get(/databases/$(database)/documents/calls/$(callId)).data.callerUid == request.auth.uid
+            || get(/databases/$(database)/documents/calls/$(callId)).data.calleeUid == request.auth.uid);
+        allow create: if loggedIn()
+          && get(/databases/$(database)/documents/calls/$(callId)).data.calleeUid == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
     // One-to-one chats.
     match /chats/{chatId} {
       allow read: if loggedIn()
