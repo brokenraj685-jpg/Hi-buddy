@@ -308,7 +308,7 @@ async function searchUsers(){
  if(!/^[a-z0-9_]{1,20}$/.test(prefix)){host.innerHTML="";return}
  host.innerHTML='<div class="suggestion-caption">Searching users…</div>';
  try{
-  const snap=await getDocs(query(collection(db,"profiles"),where("username",">=",prefix),where("username","<=",prefix+"\\uf8ff"),orderBy("username"),limit(25)));
+  const snap=await getDocs(query(collection(db,"profiles"),where("username",">=",prefix),where("username","<=",prefix+"\uf8ff"),orderBy("username"),limit(25)));
   if(seq!==searchSeq)return;
   const matches=snap.docs.filter(d=>d.id!==user.uid);
   host.innerHTML=matches.length?'<div class="suggestion-caption">PEOPLE</div>'+matches.map(d=>{const p=d.data(),nm=p.name||p.username||"HI BUDDY user";return '<button type="button" class="user-suggestion" data-user-id="'+esc(d.id)+'"><span class="suggestion-avatar">'+esc(ini(nm))+'</span><span class="suggestion-meta"><b>'+esc(nm)+'</b><small>@'+esc(p.username||"")+'</small></span><span class="suggestion-arrow">›</span></button>'}).join(""):'<div class="suggestion-caption">No matching usernames found</div>';
