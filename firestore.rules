@@ -30,10 +30,13 @@ service cloud.firestore {
         && request.auth.uid == uid;
 
       match /blocked/{blockedUid} {
-        allow read, create, delete: if loggedIn()
+        allow read, delete: if loggedIn()
+          && request.auth.uid == uid
+          && blockedUid != uid;
+        allow create: if loggedIn()
           && request.auth.uid == uid
           && blockedUid != uid
-          && (!('uid' in request.resource.data) || request.resource.data.uid == blockedUid);
+          && request.resource.data.uid == blockedUid;
         allow update: if false;
       }
     }
