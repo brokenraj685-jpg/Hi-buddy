@@ -559,8 +559,9 @@ function drawCallHistory(){
   const missed=c.status==="missed"||(c.status==="rejected"&& !outgoing);
   const icon=c.type==="video"?"▣":"☎";
   const sub=(outgoing?"Outgoing":"Incoming")+" · "+(c.type==="video"?"Video":"Voice")+" · "+callLabel(c);
-  return '<article class="call-history-row"><div class="call-history-avatar">'+esc(ini(otherName)||"HB")+'</div><div class="call-history-info"><b>'+esc(otherName)+'</b><span class="'+(missed?"call-missed":"")+'">'+esc(sub)+'</span><small>'+esc(callWhen(c.createdAt)+callDuration(c))+'</small></div><div class="call-history-actions"><span class="call-type-icon">'+icon+'</span><button class="icon-btn call-again" data-call-chat="'+esc(c.chatId||"")+'" data-call-type="'+(c.type==="video"?"video":"audio")+'" title="Call again">↗</button></div></article>';
+  return '<article class="call-history-row"><button class="call-history-avatar call-history-profile" data-call-profile="'+esc(outgoing?c.calleeUid:c.callerUid)+'">'+esc(ini(otherName)||"HB")+'</button><div class="call-history-info"><b class="call-history-profile" data-call-profile="'+esc(outgoing?c.calleeUid:c.callerUid)+'">'+esc(otherName)+'</b><span class="'+(missed?"call-missed":"")+'">'+esc(sub)+'</span><small>'+esc(callWhen(c.createdAt)+callDuration(c))+'</small></div><div class="call-history-actions"><span class="call-type-icon">'+icon+'</span><button class="icon-btn call-again" data-call-chat="'+esc(c.chatId||"")+'" data-call-type="'+(c.type==="video"?"video":"audio")+'" title="Call again">↗</button></div></article>';
  }).join(""):'<div class="call-history-empty"><div class="call-empty-icon">☎</div><b>No calls here yet</b><p>Your voice and video call history will appear here.</p></div>';
+ host.querySelectorAll("[data-call-profile]").forEach(b=>b.onclick=()=>showUserProfile(b.dataset.callProfile));
  host.querySelectorAll("[data-call-chat]").forEach(b=>b.onclick=()=>{const c=chats.find(x=>x.id===b.dataset.callChat);if(!c)return say("Open this person's chat first");openChat(c.id);setTimeout(()=>startCall(b.dataset.callType),250)});
 }
 function renderCallHistory(){
