@@ -560,11 +560,26 @@ async function startChatWith(uid,targetProfile){
   chatStage="checking local chats";
   const existingLocal=chats.find(c=>c.members?.includes(user.uid)&&c.members?.includes(uid));
   if(existingLocal){openChat(existingLocal.id);return}
+  const names={[user.uid]:profile?.name||"Me",[uid]:targetProfile?.name||targetProfile?.username||"Buddy"};
+  let existingSnap=null;
   chatStage="reading existing chats from Firestore";
-  const existingSnap=await getDocs(query(collection(db,"chats"),where("members","array-contains",user.uid)));
+  try{
+   existingSnap=await getDocs(query(collection(db,"chats"),where("members","array-contains",user.uid)));
+  }catch(readError){
+   // If the legacy collection query is denied, use a stable per-pair chat document.
+   // This does not delete or overwrite existing legacy chat documents or message subcollections.
+   if(readError?.code!=="permission-denied")throw readError;
+   chatStage="opening secure fallback chat";
+   const pairId=[user.uid,uid].sort().join("__");
+   const pairRef=doc(db,"chats",pairId);
+   const fallbackData={members:[user.uid,uid].sort(),names};
+   await setDoc(pairRef,{...fallbackData,createdAt:serverTimestamp()},{merge:true});
+   const chat={id:pairId,...fallbackData};
+   if(!chats.some(x=>x.id===pairId))chats.push(chat);
+   saveChatCache();draw();openChat(pairId);say("Chat opened");return;
+  }
   const existingDoc=existingSnap.docs.find(d=>(d.data().members||[]).includes(uid));
   if(existingDoc){const c={id:existingDoc.id,...existingDoc.data()};if(!chats.some(x=>x.id===c.id))chats.push(c);saveChatCache();draw();openChat(c.id);return}
-  const names={[user.uid]:profile?.name||"Me",[uid]:targetProfile?.name||targetProfile?.username||"Buddy"};
   const created={members:[user.uid,uid],names,lastMessage:"",createdAt:serverTimestamp()};
   chatStage="creating chat document";
   const result=await addDoc(collection(db,"chats"),created);
