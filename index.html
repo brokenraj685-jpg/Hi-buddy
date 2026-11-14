@@ -570,7 +570,7 @@ async function startChatWith(uid,targetProfile){
   const result=await addDoc(collection(db,"chats"),created);
   const chat={id:result.id,...created};chats.push(chat);saveChatCache();draw();openChat(result.id);say("Chat opened");
  }catch(e){
-  console.error("HI BUDDY startChatWith failed at "+chatStage,e);say("Chat error at "+chatStage+" ["+(e.code||"unknown")+"]: "+(e.message||String(e)));
+  console.error("HI BUDDY startChatWith failed at "+chatStage,e);say("Chat error at "+chatStage+" ["+(e.code||"unknown")+"]: "+(e.message||String(e))+" | Login UID: "+(user?.uid||"none")+" | Target UID: "+uid);
  }
 }
 function openChat(id){active=id;try{history.pushState({hibuddy:true,screen:"chat"},"",location.pathname+location.search)}catch{}let c=chats.find(x=>x.id===id);if(!c)return;let other=c.members.find(x=>x!==user.uid),n=c.names?.[other]||"Buddy";$("#chatname").textContent=n;$("#chatavatar").textContent=ini(n);$("#workspace").classList.add("chat-open");$("#empty").classList.add("hidden");$("#page").classList.add("hidden");$("#chat").classList.remove("hidden");if(stopMsgs)stopMsgs();stopMsgs=onSnapshot(query(collection(db,"chats",id,"messages"),orderBy("createdAt","asc"),limit(150)),s=>{$("#msgs").innerHTML=s.docs.map(d=>{let m=d.data();return'<div class="bubble '+(m.sender===user.uid?"mine":"")+'">'+esc(m.text)+'<small>'+(m.createdAt?.toDate?m.createdAt.toDate().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"Sending…")+'</small></div>'}).join("");$("#msgs").scrollTop=$("#msgs").scrollHeight},e=>say(err(e)));draw()}
