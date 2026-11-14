@@ -75,6 +75,21 @@ service cloud.firestore {
         && request.resource.data.media.size() <= 850000
         && request.resource.data.expiresAt is number;
       allow update, delete: if loggedIn() && resource.data.uid == request.auth.uid;
+
+      // A viewer may create/update only their own view record.
+      // Only the status owner can read the complete viewers list.
+      match /views/{viewerUid} {
+        function statusOwner() {
+          return loggedIn()
+            && get(/databases/$(database)/documents/statuses/$(statusId)).data.uid == request.auth.uid;
+        }
+        allow get, list: if statusOwner();
+        allow create, update: if loggedIn()
+          && request.auth.uid == viewerUid
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['uid','name','username','viewedAt']);
+        allow delete: if statusOwner() || (loggedIn() && request.auth.uid == viewerUid);
+      }
     }
 
 
