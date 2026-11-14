@@ -260,6 +260,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{position:fix
 .call-status{font-size:12px;color:#d2e4fa;text-align:center}.call-incoming-actions{display:flex;justify-content:center;gap:22px;padding:10px}
 @media(max-width:820px){.call-panel{min-height:360px;padding:14px}.call-video-stage{min-height:250px}.call-local-video{width:88px;height:118px}.call-actions .icon-btn{width:30px;min-width:30px;height:30px}}
 
+.call-extra-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:-5px}.call-extra-controls button{border:1px solid #ffffff24;background:#ffffff12;color:#eaf4ff;border-radius:11px;padding:8px 11px;font-size:10px;font-weight:800}.call-person-avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}.call-timer{font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:.08em}.call-video-stage{position:relative}
 /* Professional calling and call-history experience */
 .call-overlay{background:radial-gradient(ellipse at 50% 10%,#173d69ee,#030b19f5 70%);backdrop-filter:blur(16px);padding:16px}
 .call-panel-pro{width:min(470px,100%);min-height:0;max-height:94dvh;overflow:auto;border-radius:30px;padding:22px;background:linear-gradient(160deg,#152c4e,#09182d 75%);border:1px solid #ffffff20;box-shadow:0 35px 110px #0009;gap:15px}
@@ -320,7 +321,7 @@ import{getFirestore,doc,setDoc,getDoc,collection,query,where,onSnapshot,addDoc,s
 const cfg={apiKey:"AIzaSyASzfkpNVtanzi2XQIBYmvxXPTUcqZ6NBM",authDomain:"raj-11988.firebaseapp.com",databaseURL:"https://raj-11988-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"raj-11988",storageBucket:"raj-11988.firebasestorage.app",messagingSenderId:"1080242151967",appId:"1:1080242151967:web:1cc8fb6fc8a9e94b2e2b2a",measurementId:"G-CPHXNZQFNN"};
 const fb=initializeApp(cfg),auth=getAuth(fb),db=getFirestore(fb),$=s=>document.querySelector(s);
 await setPersistence(auth,browserLocalPersistence);
-let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set(),callRingTimer=null,pendingRemoteCandidates=[],callHistoryMap=new Map(),callFilter="all",stopCallHistoryCaller=null,stopCallHistoryCallee=null;
+let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set(),callRingTimer=null,callDurationTimer=null,callReconnectTimer=null,ringAudioContext=null,ringOscillator=null,ringGain=null,callStartedAt=null,cameraFacing='user',speakerEnabled=false,pendingRemoteCandidates=[],callHistoryMap=new Map(),callFilter="all",stopCallHistoryCaller=null,stopCallHistoryCallee=null;
 function say(t){let e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
 function email(p){return p+"@hibuddy.invalid"}
 function finishSignupGate(){if(releaseSignupGate)releaseSignupGate();releaseSignupGate=null;signupGate=null}
@@ -570,17 +571,23 @@ function callOtherUser(){
  const c=chats.find(x=>x.id===active);
  return c?.members?.find(x=>x!==user?.uid)||null;
 }
+function stopCallRingtone(){if(ringOscillator){try{ringOscillator.stop()}catch{}ringOscillator=null}if(ringAudioContext){try{ringAudioContext.close()}catch{}ringAudioContext=null}ringGain=null;if(callRingTimer){clearInterval(callRingTimer);callRingTimer=null}try{navigator.vibrate?.(0)}catch(e){}}
+function startCallRingtone(){stopCallRingtone();try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){ringAudioContext=new AC();ringGain=ringAudioContext.createGain();ringGain.gain.value=.035;ringGain.connect(ringAudioContext.destination);ringOscillator=ringAudioContext.createOscillator();ringOscillator.type="sine";ringOscillator.frequency.value=660;ringOscillator.connect(ringGain);ringOscillator.start();let on=true;callRingTimer=setInterval(()=>{if(ringGain&&ringAudioContext)ringGain.gain.setTargetAtTime(on?.035:0,ringAudioContext.currentTime,.04);on=!on},650)}}catch(e){}try{navigator.vibrate?.([350,180,350,900])}catch(e){}}
+function stopCallDuration(){if(callDurationTimer){clearInterval(callDurationTimer);callDurationTimer=null}}
+function startCallDuration(){stopCallDuration();callStartedAt=Date.now();const tick=()=>{const el=$("#call-timer");if(!el)return;const n=Math.floor((Date.now()-callStartedAt)/1000);el.textContent=String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")};tick();callDurationTimer=setInterval(tick,1000)}
+async function loadCallAvatar(uid){try{const snap=await getDoc(doc(db,"privateUsers",uid)),photo=snap.exists()?snap.data().photo:"",host=$("#call-avatar");if(host&&photo)host.innerHTML='<img src="'+esc(photo)+'" alt="Profile photo">'}catch(e){}}
 function showCallPanel(kind,title,status,showVideo=true,incoming=false,meta={}){
- const host=$("#call-overlay");if(!host)return;
- host.classList.remove("hidden");
- host.innerHTML='<section class="call-panel call-panel-pro"><div class="call-topline"><span class="call-live-dot"></span><span>'+(incoming?"INCOMING CALL": "HI BUDDY CALL")+'</span></div><div class="call-person"><div class="call-person-avatar">'+esc(ini(title)||"HB")+'</div><h3>'+esc(title)+'</h3><div class="call-kind">'+(showVideo?"▣ Video call":"☎ Voice call")+'</div><p id="call-status" class="call-status">'+esc(status)+'</p></div><div class="call-video-stage">'+(showVideo?'<video id="call-remote-video" class="call-remote-video" autoplay playsinline></video><video id="call-local-video" class="call-local-video" autoplay muted playsinline></video>':'<div class="call-audio-wave"><i></i><i></i><i></i><i></i><i></i></div><audio id="call-remote-audio" autoplay></audio>')+'</div><div class="call-controls">'+(incoming?'<button class="call-control end" id="decline-call" title="Decline">✕</button><button class="call-control accept" id="accept-call" title="Accept">☎</button>':'<button class="call-control" id="mute-call" title="Mute microphone">🎙</button>'+(showVideo?'<button class="call-control" id="camera-call" title="Turn camera off">▣</button>':'')+'<button class="call-control end" id="end-call" title="End call">✕</button>')+'</div><div class="call-footnote">'+(incoming?"Answer only if you recognize this person.":"Your call is end-to-end peer-to-peer when a direct connection is available.")+'</div></section>';
- if(incoming){$("#decline-call").onclick=declineIncomingCall;$("#accept-call").onclick=acceptIncomingCall}
- else{
-  $("#end-call").onclick=endCall;
-  $("#mute-call").onclick=()=>{const track=localCallStream?.getAudioTracks()[0];if(track){track.enabled=!track.enabled;$("#mute-call").textContent=track.enabled?"🎙":"🔇"}};
-  const camera=$("#camera-call");if(camera)camera.onclick=()=>{const track=localCallStream?.getVideoTracks()[0];if(track){track.enabled=!track.enabled;camera.textContent=track.enabled?"▣":"🚫"}};
+ const host=$("#call-overlay");if(!host)return;host.classList.remove("hidden","call-minimized");const peerUid=currentCall?.targetUid;
+ host.innerHTML='<section class="call-panel call-panel-pro"><div class="call-topline"><span class="call-live-dot"></span><span>'+(incoming?"INCOMING CALL":"HI BUDDY CALL")+'</span><span class="grow"></span><button class="call-minimize" id="call-minimize" title="Minimize call">−</button></div><div class="call-person"><div class="call-person-avatar" id="call-avatar">'+esc(ini(title)||"HB")+'</div><h3>'+esc(title)+'</h3><div class="call-kind">'+(showVideo?"▣ Video call":"☎ Voice call")+'</div><p id="call-status" class="call-status">'+esc(status)+'</p><div class="call-timer" id="call-timer"></div></div><div class="call-video-stage">'+(showVideo?'<video id="call-remote-video" class="call-remote-video" autoplay playsinline></video><video id="call-local-video" class="call-local-video" autoplay muted playsinline></video>':'<div class="call-audio-wave"><i></i><i></i><i></i><i></i><i></i></div><audio id="call-remote-audio" autoplay></audio>')+'</div><div class="call-controls">'+(incoming?'<button class="call-control end" id="decline-call" title="Decline">✕</button><button class="call-control accept" id="accept-call" title="Accept">☎</button>':'<button class="call-control" id="mute-call" title="Mute microphone">🎙</button>'+(showVideo?'<button class="call-control" id="camera-call" title="Turn camera off">▣</button>':'')+'<button class="call-control end" id="end-call" title="End call">✕</button>')+'</div>'+(incoming?'':'<div class="call-extra-controls"><button id="speaker-call">🔊 Speaker</button>'+(showVideo?'<button id="flip-camera-call">↻ Flip camera</button><button id="pip-call">▣ Picture-in-Picture</button>':'')+'</div>')+'<div class="call-footnote">'+(incoming?"Answer only if you recognize this person.":"Call quality depends on your network. Keep HI BUDDY open during the call.")+'</div></section>';
+ if(peerUid)loadCallAvatar(peerUid);$("#call-minimize").onclick=()=>{host.classList.add("call-minimized");say("Call is still active")};
+ if(incoming){startCallRingtone();$("#decline-call").onclick=declineIncomingCall;$("#accept-call").onclick=acceptIncomingCall}
+ else{$("#end-call").onclick=endCall;$("#mute-call").onclick=()=>{const t=localCallStream?.getAudioTracks()[0];if(t){t.enabled=!t.enabled;$("#mute-call").textContent=t.enabled?"🎙":"🔇"}};
+  const cam=$("#camera-call");if(cam)cam.onclick=()=>{const t=localCallStream?.getVideoTracks()[0];if(t){t.enabled=!t.enabled;cam.textContent=t.enabled?"▣":"🚫"}};
+  $("#speaker-call").onclick=async()=>{const el=$("#call-remote-audio")||$("#call-remote-video");speakerEnabled=!speakerEnabled;try{if(el?.setSinkId){const ds=await navigator.mediaDevices.enumerateDevices(),out=ds.find(d=>d.kind==="audiooutput"&&(speakerEnabled?/speaker/i.test(d.label):/earpiece|default/i.test(d.label)));if(out)await el.setSinkId(out.deviceId);else say("Speaker routing is not supported on this device")}else say("Use your phone audio output controls")}catch(e){say("Could not change audio output")}$("#speaker-call").textContent=speakerEnabled?"🔈 Audio":"🔊 Speaker"};
+  const flip=$("#flip-camera-call");if(flip)flip.onclick=switchCallCamera;const pip=$("#pip-call");if(pip)pip.onclick=async()=>{try{const v=$("#call-remote-video");if(!v||!document.pictureInPictureEnabled||!v.requestPictureInPicture)throw Error("Picture-in-Picture is not supported");await v.requestPictureInPicture()}catch(e){say(err(e))}};
  }
 }
+async function switchCallCamera(){try{if(!localCallStream||!callPeer)return;const nextFacing=cameraFacing==="user"?"environment":"user",stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:nextFacing},width:{ideal:640},height:{ideal:480}},audio:false}),next=stream.getVideoTracks()[0],old=localCallStream.getVideoTracks()[0],sender=callPeer.getSenders().find(x=>x.track?.kind==="video");if(!sender)throw Error("Camera track unavailable");await sender.replaceTrack(next);if(old){localCallStream.removeTrack(old);old.stop()}localCallStream.addTrack(next);cameraFacing=nextFacing;const local=$("#call-local-video");if(local){local.srcObject=localCallStream;local.play?.().catch(()=>{})}}catch(e){say("Could not switch camera: "+err(e))}}
 function setCallStatus(s){const el=$("#call-status");if(el)el.textContent=s}
 function attachCallMedia(videoMode){
  const remote=videoMode?$("#call-remote-video"):$("#call-remote-audio"),local=$("#call-local-video");
@@ -592,25 +599,17 @@ async function getCallMedia(type){
  return navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"?{facingMode:"user",width:{ideal:640},height:{ideal:480}}:false});
 }
 function initPeer(callRef,role,type){
- const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]});
- callPeer=pc;remoteCallStream=new MediaStream();
- localCallStream.getTracks().forEach(track=>pc.addTrack(track,localCallStream));
- pc.ontrack=e=>{e.streams[0]?.getTracks().forEach(t=>remoteCallStream.addTrack(t));attachCallMedia(type==="video")};
- pc.onconnectionstatechange=()=>{if(pc.connectionState==="connected")setCallStatus("Connected");if(["failed","disconnected"].includes(pc.connectionState))setCallStatus("Connection interrupted. Trying to reconnect…")};
- const ownPath=role==="caller"?"callerCandidates":"calleeCandidates";
- const otherPath=role==="caller"?"calleeCandidates":"callerCandidates";
+ const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]});callPeer=pc;remoteCallStream=new MediaStream();let seenRemoteSdp="";
+ localCallStream.getTracks().forEach(t=>pc.addTrack(t,localCallStream));pc.ontrack=e=>{e.streams[0]?.getTracks().forEach(t=>{if(!remoteCallStream.getTracks().some(x=>x.id===t.id))remoteCallStream.addTrack(t)});attachCallMedia(type==="video")};
+ pc.onconnectionstatechange=()=>{if(pc.connectionState==="connected"){setCallStatus("Connected");if(currentCall?.status==="accepted")startCallDuration();if(callReconnectTimer){clearTimeout(callReconnectTimer);callReconnectTimer=null}}if(["failed","disconnected"].includes(pc.connectionState)){setCallStatus("Connection interrupted. Reconnecting…");if(role==="caller"&&!callReconnectTimer)callReconnectTimer=setTimeout(async()=>{callReconnectTimer=null;if(!currentCall||callPeer!==pc||pc.connectionState==="connected")return;try{pc.restartIce();const offer=await pc.createOffer({iceRestart:true});await pc.setLocalDescription(offer);await updateDoc(callRef,{offer:{type:offer.type,sdp:offer.sdp}});setCallStatus("Reconnecting…")}catch(e){setCallStatus("Network reconnect failed. Check your connection.")}},1800)}};
+ const ownPath=role==="caller"?"callerCandidates":"calleeCandidates",otherPath=role==="caller"?"calleeCandidates":"callerCandidates";
  pc.onicecandidate=e=>{if(e.candidate)addDoc(collection(db,"calls",callRef.id,ownPath),e.candidate.toJSON()).catch(x=>say("Could not send call network data: "+err(x)))};
- stopRemoteCandidates=onSnapshot(collection(db,"calls",callRef.id,otherPath),snap=>snap.docChanges().forEach(change=>{if(change.type==="added"){const candidate=new RTCIceCandidate(change.doc.data());if(pc.remoteDescription)pc.addIceCandidate(candidate).catch(()=>{});else pendingRemoteCandidates.push(candidate)}}));
- stopCallDoc=onSnapshot(callRef,async snap=>{
-  if(!snap.exists())return;
-  const data=snap.data();
-  if(role==="caller"&&data.answer&&!pc.currentRemoteDescription){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));for(const candidate of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(candidate).catch(()=>{});setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
-  if(data.status==="accepted")setCallStatus("Connecting…");
-  if(data.status==="rejected"){say("Call declined");cleanupCall()}
-  if(data.status==="missed"){say("Missed call");cleanupCall()}
-  if(data.status==="ended"){say("Call ended");cleanupCall()}
- });
- return pc;
+ stopRemoteCandidates=onSnapshot(collection(db,"calls",callRef.id,otherPath),snap=>snap.docChanges().forEach(ch=>{if(ch.type==="added"){const candidate=new RTCIceCandidate(ch.doc.data());if(pc.remoteDescription)pc.addIceCandidate(candidate).catch(()=>{});else pendingRemoteCandidates.push(candidate)}}));
+ stopCallDoc=onSnapshot(callRef,async snap=>{if(!snap.exists())return;const data=snap.data();
+  if(role==="caller"&&data.answer?.sdp&&data.answer.sdp!==seenRemoteSdp){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));seenRemoteSdp=data.answer.sdp;for(const x of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(x).catch(()=>{});setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
+  if(role==="callee"&&data.offer?.sdp&&data.offer.sdp!==seenRemoteSdp&&data.status==="accepted"){try{await pc.setRemoteDescription(new RTCSessionDescription(data.offer));seenRemoteSdp=data.offer.sdp;for(const x of pendingRemoteCandidates.splice(0))await pc.addIceCandidate(x).catch(()=>{});const answer=await pc.createAnswer();await pc.setLocalDescription(answer);await updateDoc(callRef,{answer:{type:answer.type,sdp:answer.sdp}})}catch(e){say("Call recovery failed: "+err(e))}}
+  if(data.status==="accepted"){stopCallRingtone();currentCall.status="accepted";setCallStatus("Connecting…")}if(data.status==="rejected"){stopCallRingtone();say("Call declined");cleanupCall()}if(data.status==="missed"){stopCallRingtone();say("Missed call");cleanupCall()}if(data.status==="ended"){stopCallRingtone();say("Call ended");cleanupCall()}
+ });return pc;
 }
 async function startCall(type){
  if(!active||!user)return say("Open a chat first");
@@ -619,7 +618,7 @@ async function startCall(type){
  try{
   localCallStream=await getCallMedia(type);
   const callRef=doc(collection(db,"calls"));
-  currentCall={id:callRef.id,ref:callRef,role:"caller",type,targetUid:target};
+  currentCall={id:callRef.id,ref:callRef,role:"caller",type,targetUid:target,status:"ringing"};
   await setDoc(callRef,{callerUid:user.uid,calleeUid:target,chatId:active,callerName:profile?.name||"HI BUDDY",calleeName:chats.find(x=>x.id===active)?.names?.[target]||"Buddy",type,status:"ringing",createdAt:serverTimestamp()});
   const peer=initPeer(callRef,"caller",type);
   showCallPanel(type, type==="video"?"Video call":"Voice call","Calling…",type==="video");
@@ -636,7 +635,7 @@ function listenForIncomingCalls(){
   for(const d of snap.docs){
    const data=d.data();
    if(data.status==="ringing"&&data.offer&&!currentCall&&!seenIncomingCalls.has(d.id)){
-    seenIncomingCalls.add(d.id);currentCall={id:d.id,ref:d.ref,role:"callee",type:data.type||"audio",targetUid:data.callerUid};
+    seenIncomingCalls.add(d.id);currentCall={id:d.id,ref:d.ref,role:"callee",type:data.type||"audio",targetUid:data.callerUid,status:"ringing"};
     showCallPanel(data.type||"audio",data.callerName||"Incoming call","Incoming "+(data.type==="video"?"video":"voice")+" call",data.type==="video",true,data);
     break;
    }
@@ -675,7 +674,7 @@ function cleanupCall(){
  if(callPeer){callPeer.ontrack=null;callPeer.onicecandidate=null;callPeer.close();callPeer=null}
  if(localCallStream){localCallStream.getTracks().forEach(t=>t.stop());localCallStream=null}
  if(remoteCallStream){remoteCallStream.getTracks().forEach(t=>t.stop());remoteCallStream=null}
- pendingRemoteCandidates=[];currentCall=null;$("#call-overlay").classList.add("hidden");$("#call-overlay").innerHTML="";
+ pendingRemoteCandidates=[];currentCall=null;speakerEnabled=false;cameraFacing="user";$("#call-overlay").classList.remove("call-minimized");$("#call-overlay").classList.add("hidden");$("#call-overlay").innerHTML="";
 }
 
 function toggleTheme(){let next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("hibuddy-theme",next)}catch{}}
