@@ -537,7 +537,7 @@ async function startCall(type){
   localCallStream=await getCallMedia(type);
   const callRef=doc(collection(db,"calls"));
   currentCall={id:callRef.id,ref:callRef,role:"caller",type,targetUid:target};
-  await setDoc(callRef,{callerUid:user.uid,calleeUid:target,callerName:profile?.name||"HI BUDDY",calleeName:chats.find(x=>x.id===active)?.names?.[target]||"Buddy",type,status:"ringing",createdAt:serverTimestamp()});
+  await setDoc(callRef,{callerUid:user.uid,calleeUid:target,chatId:active,callerName:profile?.name||"HI BUDDY",calleeName:chats.find(x=>x.id===active)?.names?.[target]||"Buddy",type,status:"ringing",createdAt:serverTimestamp()});
   const peer=initPeer(callRef,"caller",type);
   showCallPanel(type, type==="video"?"Video call":"Voice call","Calling…",type==="video");
   attachCallMedia(type==="video");
