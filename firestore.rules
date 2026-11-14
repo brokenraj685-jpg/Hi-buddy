@@ -28,7 +28,8 @@ service cloud.firestore {
           (claimId.matches('phone_[0-9]{10}') && request.resource.data.type == 'phone')
           || (claimId.matches('username_[a-z0-9_]{3,20}') && request.resource.data.type == 'username')
         );
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if loggedIn() && resource.data.uid == request.auth.uid;
     }
 
     // Public directory contains only the fields intentionally shown on user profiles.
