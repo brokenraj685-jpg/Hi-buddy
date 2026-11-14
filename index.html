@@ -307,6 +307,70 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{position:fix
 .calls-security-note{margin-top:22px;padding:13px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:10px;line-height:1.5}
 @media(max-width:480px){.call-panel-pro{padding:17px;border-radius:25px}.call-panel-pro .call-video-stage{min-height:190px}.calls-page-head h2{font-size:24px}.calls-quick-actions>div{padding:13px}}
 
+
+/* HI BUDDY unified premium button system */
+:root{--btn-radius:14px;--btn-shadow:0 7px 18px #0b64c51c;--focus-ring:0 0 0 3px color-mix(in srgb,var(--brand) 22%,transparent)}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .16s ease,filter .18s ease}
+button:focus-visible{outline:0;box-shadow:var(--focus-ring)}
+button:disabled{opacity:.48!important;cursor:not-allowed!important;filter:grayscale(.2);transform:none!important}
+button:active:not(:disabled){transform:translateY(1px) scale(.975)}
+/* Main actions */
+.primary,.primary-setting-btn,.settings-detail button,.settings-detail-host button:not(.secondary-setting-btn):not(.danger-setting-btn){min-height:43px;border:1px solid transparent;border-radius:13px;background:linear-gradient(135deg,#087cf0 0%,#13b9e8 100%);color:#fff;font-weight:850;letter-spacing:.005em;box-shadow:0 7px 18px #087cf02b}
+.primary:hover,.primary-setting-btn:hover,.settings-detail button:hover{filter:brightness(1.06);box-shadow:0 10px 24px #087cf03b}
+.send-btn{width:42px;height:42px;min-width:42px;border:0;border-radius:14px;background:linear-gradient(145deg,#087cf0,#13b9e8);color:#fff;font-size:16px;box-shadow:0 6px 15px #087cf033;display:grid;place-items:center}
+.send-btn:hover{filter:brightness(1.08);box-shadow:0 9px 20px #087cf044}
+.secondary-setting-btn{border:1px solid color-mix(in srgb,var(--brand) 15%,var(--line));border-radius:12px;background:var(--tint);color:var(--brand);font-weight:850}
+.danger-setting-btn{border:1px solid #ef596022;border-radius:12px;background:color-mix(in srgb,#ef5960 10%,var(--panel));color:#d83f51;font-weight:850}
+.text-btn{border-radius:10px;color:var(--brand);font-weight:850}
+.text-btn:hover{background:var(--tint)}
+/* Header and utility icon buttons */
+.icon-btn,.settings-back,.settings-subhead .settings-back{min-width:40px;min-height:40px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--ink);box-shadow:0 3px 10px #102e6408}
+.icon-btn:hover,.settings-back:hover{border-color:color-mix(in srgb,var(--brand) 45%,var(--line));background:var(--tint);color:var(--brand);box-shadow:0 6px 16px #087cf018}
+.side-actions .icon-btn,.topbar .icon-btn{background:var(--panel2)}
+.call-actions .icon-btn{border-radius:12px;background:var(--panel2)}
+/* Settings and profile actions */
+.setting-action{border:1px solid color-mix(in srgb,var(--brand) 17%,var(--line));border-radius:11px;background:var(--tint);color:var(--brand);padding:8px 11px;font-weight:850}
+.setting-action:hover{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 13%,var(--panel))}
+.setting-row:hover{background:color-mix(in srgb,var(--tint) 55%,transparent);border-radius:10px}
+.settings-profile-link{border-radius:17px;padding:12px;box-shadow:0 5px 18px #102e6409;transition:transform .18s,border-color .18s,box-shadow .18s}
+.settings-profile-link:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line));box-shadow:0 9px 25px #087cf014}
+.settings-detail button{min-height:38px;padding:9px 14px;border-radius:11px}
+.settings-detail .secondary-setting-btn{background:var(--tint);color:var(--brand);border:1px solid color-mix(in srgb,var(--brand) 16%,var(--line));box-shadow:none}
+.settings-detail .danger-setting-btn{background:color-mix(in srgb,#ef5960 10%,var(--panel));color:#d83f51;border:1px solid #ef596033;box-shadow:none}
+/* Chat list, search and composer */
+.search-wrap{border-radius:14px;transition:border-color .18s,box-shadow .18s}
+.search-wrap:focus-within{border-color:var(--brand);box-shadow:var(--focus-ring)}
+.person{border:1px solid transparent}
+.person:hover{background:var(--panel2);border-color:var(--line)}
+.person.selected{background:var(--tint);border-color:color-mix(in srgb,var(--brand) 15%,var(--line))}
+.user-suggestion{border-radius:13px;transition:background .16s,transform .16s}
+.user-suggestion:hover{background:var(--tint)}
+.composer{border:1px solid var(--line);box-shadow:0 4px 15px #102e6408;transition:border-color .18s,box-shadow .18s}
+.composer:focus-within{border-color:color-mix(in srgb,var(--brand) 55%,var(--line));box-shadow:var(--focus-ring)}
+/* Bottom navigation */
+.bottom-nav .tab{min-height:46px;padding:5px 7px;background:transparent;color:var(--muted)}
+.bottom-nav .tab.active{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brand) 14%,transparent),0 4px 12px #087cf010}
+.bottom-nav .tab:not(.active):hover{background:var(--panel2);color:var(--ink)}
+/* Call action controls and filters */
+.call-extra-controls button,.call-filters button{min-height:36px;padding:8px 13px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--ink);font-size:10px;font-weight:800;box-shadow:0 3px 10px #00000008}
+.call-extra-controls button:hover,.call-filters button:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line));color:var(--brand);background:var(--tint)}
+.call-filters button.active{border-color:transparent;background:linear-gradient(135deg,#087cf0,#13b9e8);color:white;box-shadow:0 5px 14px #087cf02a}
+.call-control{display:grid;place-items:center;box-shadow:0 7px 18px #0003;transition:transform .18s,filter .18s,box-shadow .18s}
+.call-control:hover{filter:brightness(1.12);box-shadow:0 10px 24px #0004}
+.call-panel-pro .call-control:not(.end):not(.accept){background:linear-gradient(145deg,#35577e,#213d60);border:1px solid #ffffff25}
+.call-panel-pro .call-control.end{background:linear-gradient(145deg,#ff5b70,#d92e4a)}
+.call-panel-pro .call-control.accept{background:linear-gradient(145deg,#22d69b,#079b70)}
+.call-again{border:1px solid color-mix(in srgb,var(--brand) 20%,var(--line));border-radius:12px;background:var(--tint);color:var(--brand);box-shadow:0 4px 12px #087cf014}
+.call-again:hover{background:var(--brand);color:#fff}
+.call-minimize{border:1px solid #ffffff20;background:#ffffff16;cursor:pointer}
+.call-minimize:hover{background:#ffffff28}
+/* Forms */
+.field input,.settings-field input,.settings-field select,.settings-field textarea,.settings-detail input,.settings-detail select,.settings-detail textarea{transition:border-color .18s,box-shadow .18s}
+.field input:focus,.settings-field input:focus,.settings-field select:focus,.settings-field textarea:focus,.settings-detail input:focus,.settings-detail select:focus,.settings-detail textarea:focus{outline:0;border-color:var(--brand);box-shadow:var(--focus-ring)}
+input[type="checkbox"],input[type="radio"]{accent-color:var(--brand)}
+@media(max-width:820px){.icon-btn,.settings-back{min-width:38px;min-height:38px}.send-btn{width:39px;height:39px;min-width:39px}.call-control{width:54px;height:54px}}
+@media(hover:none){button:hover{filter:none}}
+
 </style>
 </head>
 <body>
