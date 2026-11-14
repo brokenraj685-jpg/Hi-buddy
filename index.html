@@ -30,7 +30,7 @@
 .chat-list{overflow:auto;padding:0 10px 14px}.person{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 10px;border:0;border-radius:15px;background:transparent;color:var(--ink);transition:.15s}.person:hover,.person.selected{background:var(--panel2)}.avatar{width:46px;height:46px;border-radius:16px;flex:none;display:grid;place-items:center;background:linear-gradient(145deg,#9bd9c4,#267b65);color:white;font-size:13px;font-weight:850}.person-info{flex:1;min-width:0}.person-name{font-size:13px;font-weight:800}.person-preview{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:5px}.person-time{font-size:9px;color:var(--muted);align-self:flex-start;padding-top:3px}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg)}.welcome{height:100%;display:grid;place-items:center;text-align:center;padding:28px}.welcome-mark{width:86px;height:86px;border-radius:28px;background:var(--tint);display:grid;place-items:center;color:var(--brand);font-size:35px;margin:0 auto 18px}.welcome h2{font-size:24px;letter-spacing:-.04em;margin:0 0 8px}.welcome p{font-size:12px;color:var(--muted);line-height:1.65;max-width:290px;margin:auto}
 .chat-view{height:100%;display:flex;flex-direction:column;min-height:0}.chat-head{height:70px;flex:none;display:flex;align-items:center;gap:11px;padding:0 20px;background:var(--panel);border-bottom:1px solid var(--line)}.chat-head .avatar{width:42px;height:42px;border-radius:15px}.chat-title{font-size:13px;font-weight:850}.chat-status{font-size:10px;color:var(--muted);margin-top:3px}.grow{flex:1}
-.messages{flex:1;overflow:auto;padding:24px clamp(14px,4vw,56px);display:flex;flex-direction:column;gap:10px}.bubble{max-width:min(72%,520px);align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:17px 17px 17px 5px;padding:11px 14px;font-size:12px;line-height:1.55;overflow-wrap:anywhere;box-shadow:0 3px 12px #102c2008}.bubble.mine{align-self:flex-end;background:var(--tint);border-color:transparent;border-radius:17px 17px 5px 17px}.bubble small{display:block;text-align:right;color:var(--muted);font-size:9px;margin-top:5px}
+.messages{flex:1;overflow:auto;padding:24px clamp(14px,4vw,56px);display:flex;flex-direction:column;gap:10px}.bubble{max-width:min(72%,520px);align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:17px 17px 17px 5px;padding:11px 14px;font-size:var(--chat-font,12px);line-height:1.55;overflow-wrap:anywhere;box-shadow:0 3px 12px #102c2008}.bubble.mine{align-self:flex-end;background:var(--tint);border-color:transparent;border-radius:17px 17px 5px 17px}.bubble small{display:block;text-align:right;color:var(--muted);font-size:9px;margin-top:5px}
 .composer-wrap{padding:12px 20px max(12px,env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}.composer{display:flex;align-items:flex-end;gap:9px;padding:6px 7px 6px 14px;border:1px solid var(--line);border-radius:17px;background:var(--panel2)}.composer textarea{flex:1;min-width:0;max-height:110px;min-height:38px;resize:none;border:0;outline:0;background:transparent;color:var(--ink);font-size:12px;padding:10px 0}.send-btn{width:40px;height:40px;border:0;border-radius:13px;background:var(--brand);color:#fff;font-size:16px}
 .bottom-nav{height:68px;flex:none;display:flex;justify-content:space-around;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}.tab{flex:1;border:0;background:none;color:var(--muted);font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.tab span{font-size:10px;font-weight:700}.tab.active{color:var(--brand)}
 .page{padding:25px;overflow:auto;animation:rise .2s}.page h2{font-size:23px;letter-spacing:-.04em;margin:0 0 6px}.page-sub{font-size:12px;color:var(--muted);margin:0 0 20px}.settings-card{padding:17px 18px;border:1px solid var(--line);border-radius:17px;background:var(--panel);margin:12px 0}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.setting-row:last-child{border-bottom:0}.toast{position:fixed;z-index:10;bottom:82px;left:50%;transform:translate(-50%,12px);opacity:0;background:#172b27;color:white;border-radius:12px;padding:11px 16px;font-size:11px;transition:.2s;max-width:90%;text-align:center;box-shadow:var(--shadow)}.toast.show{opacity:1;transform:translate(-50%,0)}
@@ -165,12 +165,37 @@ body{font-size:12px}
 .settings-detail input{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--ink);padding:0 10px;font-size:11px;margin:5px 0 9px}
 .settings-detail button{border:0;border-radius:9px;background:var(--brand);color:white;padding:8px 12px;font-size:10px;font-weight:800}
 @media(max-width:420px){.settings-hero{padding:10px}.settings-group{margin:10px 0}.settings-card{padding-inline:9px}.setting-row{min-height:41px}}
+
+/* Compact mobile navigation and settings polish */
+:root{--chat-font:12px}
+.topbar{gap:9px}
+.icon-btn{width:40px;min-width:40px;height:40px;border-radius:12px}
+.bottom-nav{height:70px;padding:6px 8px max(6px,env(safe-area-inset-bottom));gap:5px}
+.bottom-nav .tab{position:relative;flex-direction:row;gap:7px;border:1px solid transparent;border-radius:12px;font-size:17px;min-width:0}
+.bottom-nav .tab span{font-size:11px;font-weight:800}
+.bottom-nav .tab.active{background:var(--tint);border-color:color-mix(in srgb,var(--brand) 18%,transparent);color:var(--brand)}
+.page{padding:16px 14px 22px;overscroll-behavior:contain}
+.page h2{font-size:21px;margin-bottom:12px}
+.settings-hero{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:14px;background:var(--panel);margin:8px 0 13px}
+.settings-hero .avatar{width:42px;height:42px;border-radius:13px}
+.settings-group{margin:11px 0}
+.settings-label{font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 3px 6px}
+.settings-card{padding:3px 11px;margin:0;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+.setting-row{min-height:48px;padding:8px 0;gap:8px}
+.setting-left{display:flex;align-items:center;gap:10px;min-width:0}
+.setting-icon{width:30px;height:30px;display:grid;place-items:center;flex:none;border-radius:10px;background:var(--panel2);font-size:15px}
+.setting-meta{min-width:0}.setting-name{font-size:12px;font-weight:800}.setting-desc{font-size:10px;color:var(--muted);margin-top:2px}
+.setting-action{border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--brand);padding:7px 9px;font-size:10px;font-weight:800;white-space:nowrap}
+.settings-detail{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px;margin-top:10px;font-size:12px;line-height:1.5}
+.settings-detail input,.settings-detail select{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--ink);padding:0 10px;font-size:12px;margin:7px 0}
+.settings-detail button{border:0;border-radius:9px;background:var(--brand);color:white;padding:9px 12px;font-size:11px;font-weight:800}
+@media(max-width:420px){.topbar{padding-inline:12px}.bottom-nav{height:66px}.bottom-nav .tab{gap:5px}.bottom-nav .tab span{font-size:10px}.page{padding:13px 12px 20px}.setting-row{min-height:45px}}
 </style>
 </head>
 <body>
 <section id="auth"><div class="auth-shell"><div class="brand"><div class="brand-mark"><img src="/icons/icon-192.png" alt="HI BUDDY"></div><div><div class="brand-name">HI BUDDY</div></div></div><div id="authform"></div></div></section>
 <div id="app" class="hidden">
-<header class="topbar"><div class="brand"><div class="brand-mark"><img src="/icons/icon-192.png" alt="HI BUDDY"></div><div><div class="brand-name">HI BUDDY</div></div></div><button class="icon-btn install-btn" id="installApp" title="Install HI BUDDY" hidden>↓<span>Install</span></button><button class="icon-btn" id="theme" title="Toggle theme">◐</button><button class="icon-btn" id="add" title="New chat">＋</button><button class="icon-btn" id="settings" title="Settings">⚙</button></header>
+<header class="topbar"><div class="brand"><div class="brand-mark"><img src="/icons/icon-192.png" alt="HI BUDDY"></div><div><div class="brand-name">HI BUDDY</div></div></div><button class="icon-btn" id="theme" title="Toggle theme">◐</button><button class="icon-btn" id="add" title="New chat">＋</button><button class="icon-btn" id="settings" title="Settings">⚙</button></header>
 <div class="workspace" id="workspace">
 <aside class="sidebar"><div class="side-head"><h2 id="heading">Messages</h2><div class="side-actions"><button class="icon-btn" id="find" title="Search">⌕</button><button class="icon-btn" id="newchat" title="New chat">＋</button></div></div><div class="search-wrap"><span>⌕</span><input id="searchinput" placeholder="Search conversations"></div><div class="chat-list" id="people"></div></aside>
 <main class="main"><div class="welcome" id="empty"><div><div class="welcome-mark">✉</div><h2>Your conversations, together.</h2></div></div>
@@ -202,14 +227,19 @@ async function newChat(){let u=prompt("Enter exact username");if(!u)return;try{l
 function settingsHome(){
  const n=esc(profile?.name||"HI BUDDY"),u=esc(profile?.username||"");
  const row=(icon,name,desc,action,label="Open")=>`<div class="setting-row"><div class="setting-left"><span class="setting-icon">${icon}</span><div class="setting-meta"><div class="setting-name">${name}</div><div class="setting-desc">${desc}</div></div></div><button class="setting-action" data-setting="${action}">${label} ›</button></div>`;
- $("#page").innerHTML=`<h2>Settings</h2><div class="settings-hero"><div class="avatar">${esc(ini(profile?.name||"HB"))}</div><div class="person-info"><div class="person-name">${n}</div><div class="person-preview">@${u}</div></div><button class="setting-action" data-setting="profile">Edit ›</button></div>
- <section class="settings-group"><div class="settings-label">Account</div><div class="settings-card">${row("♙","Profile","Name and username","profile")}${row("🔒","Account security","Signed-in account and session","security")}</div></section>
- <section class="settings-group"><div class="settings-label">Preferences</div><div class="settings-card">${row("◐","Appearance","Light or dark theme","appearance",document.documentElement.dataset.theme==="dark"?"Dark":"Light")}${row("♬","Notifications","Browser notification permission","notifications")}</div></section>
- <section class="settings-group"><div class="settings-label">App</div><div class="settings-card">${row("ⓘ","About HI BUDDY","App version and information","about")}${row("↪","Log out","Sign out from this device","logout","Log out")}</div></section><div id="settings-detail"></div>`;
+ const fontSize=localStorage.getItem("hibuddy-chat-font")||"12";
+ $("#page").innerHTML=`<h2>Settings</h2>
+ <div class="settings-hero"><div class="avatar">${esc(ini(profile?.name||"HB"))}</div><div class="person-info"><div class="person-name">${n}</div><div class="person-preview">@${u}</div></div><button class="setting-action" data-setting="profile">Edit ›</button></div>
+ <section class="settings-group"><div class="settings-label">Account</div><div class="settings-card">${row("♙","Profile","Name and account details","profile")}${row("🔐","Account security","Session and sign out","security")}</div></section>
+ <section class="settings-group"><div class="settings-label">Privacy</div><div class="settings-card">${row("🔒","Privacy","Understand available privacy controls","privacy")}</div></section>
+ <section class="settings-group"><div class="settings-label">Chats</div><div class="settings-card">${row("💬","Chat settings","Message text size and chat display","chats")}${row("🗂","Storage and data","Browser storage information","storage")}</div></section>
+ <section class="settings-group"><div class="settings-label">Preferences</div><div class="settings-card">${row("◐","Appearance","Light or dark theme","appearance",document.documentElement.dataset.theme==="dark"?"Dark":"Light")}${row("♬","Notifications","Browser notification permission","notifications")}${row("🌐","App language","Current interface language","language","English")}</div></section>
+ <section class="settings-group"><div class="settings-label">Support</div><div class="settings-card">${row("ⓘ","About HI BUDDY","App information and version","about")}${row("✉","Help and support","Contact support","help")}${row("↪","Log out","Sign out from this device","logout","Log out")}</div></section><div id="settings-detail"></div>`;
  $("#page").querySelectorAll("[data-setting]").forEach(b=>b.onclick=()=>settingAction(b.dataset.setting));
 }
 function settingAction(which){
  const box=$("#settings-detail");
+ if(!box)return;
  if(which==="appearance"){toggleTheme();settingsHome();say("Theme updated");return}
  if(which==="logout"){if(confirm("Log out from HI BUDDY?"))signOut(auth);return}
  if(which==="profile"){
@@ -217,48 +247,49 @@ function settingAction(which){
   $("#save-profile-name").onclick=async()=>{let name=$("#edit-profile-name").value.trim();if(!name)return say("Enter your name");try{await updateDoc(doc(db,"profiles",user.uid),{name});profile={...profile,name};settingsHome();say("Profile updated")}catch(e){say(err(e))}};return;
  }
  if(which==="notifications"){
-  if(!("Notification" in window)){box.innerHTML='<div class="settings-detail">Notifications are not supported by this browser.</div>';return}
-  if(Notification.permission==="granted"){box.innerHTML='<div class="settings-detail">Notifications are allowed in this browser. Message alerts still need notification delivery support in the app.</div>';return}
-  box.innerHTML='<div class="settings-detail"><b>Browser notifications</b><p class="tiny">Allow browser permission. This alone does not activate background message alerts.</p><button id="allow-notifications">Allow notifications</button></div>';
-  $("#allow-notifications").onclick=async()=>{try{let p=await Notification.requestPermission();box.innerHTML=`<div class="settings-detail">Notification permission: ${esc(p)}.</div>`}catch(e){say("Could not request notification permission")}};return;
+  if(!("Notification" in window)){box.innerHTML='<div class="settings-detail"><b>Notifications</b><p class="tiny">This browser does not support web notifications.</p></div>';return}
+  const state=Notification.permission;
+  box.innerHTML=`<div class="settings-detail"><b>Browser notifications</b><p class="tiny">Permission status: ${esc(state)}. Permission alone does not enable background message delivery.</p>${state==="default"?'<button id="allow-notifications">Allow notifications</button>':state==="denied"?'<p class="tiny">Notifications are blocked in browser site settings.</p>':'<p class="tiny">Permission is allowed for this site.</p>'}</div>`;
+  const b=$("#allow-notifications");if(b)b.onclick=async()=>{try{const result=await Notification.requestPermission();settingAction("notifications");say("Notification permission: "+result)}catch(e){say("Could not request notification permission")}};return;
  }
- if(which==="security"){box.innerHTML='<div class="settings-detail"><b>Account session</b><p class="tiny">Your sign-in session is kept on this device until you log out.</p><button id="security-logout">Log out</button></div>';$("#security-logout").onclick=()=>{if(confirm("Log out from this device?"))signOut(auth)};return}
- if(which==="about"){box.innerHTML='<div class="settings-detail"><b>HI BUDDY</b><p class="tiny">A simple chat app. Version 1.0</p></div>';return}
+ if(which==="security"){
+  box.innerHTML='<div class="settings-detail"><b>Account session</b><p class="tiny">Your sign-in session stays on this device until you log out. Keep your password private.</p><button id="security-logout">Log out</button></div>';
+  $("#security-logout").onclick=()=>{if(confirm("Log out from this device?"))signOut(auth)};return;
+ }
+ if(which==="chats"){
+  const v=localStorage.getItem("hibuddy-chat-font")||"12";
+  box.innerHTML=`<div class="settings-detail"><b>Chat display</b><label for="chat-font-size" class="tiny">Message text size</label><select id="chat-font-size"><option value="11" ${v==="11"?"selected":""}>Small</option><option value="12" ${v==="12"?"selected":""}>Medium</option><option value="14" ${v==="14"?"selected":""}>Large</option><option value="16" ${v==="16"?"selected":""}>Extra large</option></select><button id="save-chat-display">Save preference</button></div>`;
+  $("#save-chat-display").onclick=()=>{const size=$("#chat-font-size").value;localStorage.setItem("hibuddy-chat-font",size);document.documentElement.style.setProperty("--chat-font",size+"px");document.querySelectorAll(".bubble").forEach(x=>x.style.fontSize=size+"px");say("Chat display saved")};return;
+ }
+ if(which==="privacy"){
+  box.innerHTML='<div class="settings-detail"><b>Privacy information</b><p class="tiny">This build currently supports account sign-in and private one-to-one chat membership. WhatsApp-style Last Seen, Online visibility, Read Receipts, Status audience and Blocked Contacts are not implemented in the current backend, so they are not shown as active switches.</p></div>';return;
+ }
+ if(which==="storage"){
+  let info="Storage estimate is not available in this browser.";
+  if(navigator.storage&&navigator.storage.estimate){navigator.storage.estimate().then(v=>{const used=v.usage||0,quota=v.quota||0;box.innerHTML=`<div class="settings-detail"><b>Storage and data</b><p class="tiny">This website uses approximately ${(used/1048576).toFixed(2)} MB of browser storage out of ${(quota/1048576).toFixed(0)} MB estimated quota. This does not include Firebase cloud data.</p></div>`})}
+  box.innerHTML=`<div class="settings-detail"><b>Storage and data</b><p class="tiny">${info}</p><p class="tiny">Chat messages are stored in your connected Firebase project.</p></div>`;return;
+ }
+ if(which==="language"){box.innerHTML='<div class="settings-detail"><b>App language</b><p class="tiny">English is the currently available interface language in this build.</p></div>';return}
+ if(which==="help"){box.innerHTML='<div class="settings-detail"><b>Help and support</b><p class="tiny">For help, contact the app administrator or reply with the issue details in your project support channel.</p></div>';return}
+ if(which==="about"){box.innerHTML='<div class="settings-detail"><b>HI BUDDY</b><p class="tiny">A simple space to connect and chat. Version 1.1</p></div>';return}
 }
-function tab(t){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));$("#workspace").classList.remove("chat-open");$("#chat").classList.add("hidden");$("#empty").classList.add("hidden");$("#page").classList.remove("hidden");if(t==="chats"){active=null;$("#page").classList.add("hidden");$("#empty").classList.remove("hidden");return}if(t==="updates")$("#page").innerHTML='<h2>Updates</h2><div class="settings-card"><b>Updates are not available yet</b></div>';if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><div class="settings-card"><b>Calling is not available yet</b></div>';if(t==="settings")settingsHome()}
+function tab(t){
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
+ $("#workspace").classList.remove("chat-open");$("#chat").classList.add("hidden");$("#empty").classList.add("hidden");$("#page").classList.remove("hidden");
+ if(t==="chats"){active=null;$("#page").classList.add("hidden");$("#empty").classList.remove("hidden");return}
+ if(t==="updates")$("#page").innerHTML='<h2>Updates</h2><div class="settings-card"><b>Updates are not available yet</b><p class="tiny">Status publishing and viewing need additional backend features.</p></div>';
+ if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><div class="settings-card"><b>Calling is not available yet</b><p class="tiny">Voice and video calling need a calling service and permissions.</p></div>';
+ if(t==="settings")settingsHome();
+}
 function toggleTheme(){let next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("hibuddy-theme",next)}catch{}}
-try{let saved=localStorage.getItem("hibuddy-theme");if(saved)document.documentElement.dataset.theme=saved}catch{}
+try{let saved=localStorage.getItem("hibuddy-theme");if(saved)document.documentElement.dataset.theme=saved;let fs=localStorage.getItem("hibuddy-chat-font");if(fs)document.documentElement.style.setProperty("--chat-font",fs+"px")}catch{}
 $("#theme").onclick=toggleTheme;$("#add").onclick=newChat;$("#newchat").onclick=newChat;$("#settings").onclick=()=>tab("settings");$("#find").onclick=()=>$("#searchinput").focus();$("#searchinput").oninput=draw;$("#people").onclick=e=>{let b=e.target.closest("[data-id]");if(b)openChat(b.dataset.id)};$("#back").onclick=()=>{active=null;$("#workspace").classList.remove("chat-open");$("#chat").classList.add("hidden");$("#empty").classList.remove("hidden")};$("#send").onclick=send;$("#message").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}};document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));authUI();
 </script>
 
 <script>
-(() => {
-  let deferredPrompt = null;
-  const installButton = document.getElementById('installApp');
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  if (isStandalone && installButton) installButton.hidden = true;
-  window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
-    if (installButton) installButton.hidden = false;
-  });
-  if (installButton) installButton.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      installButton.hidden = true;
-    } else {
-      alert('Chrome menu (⋮) kholo aur “Add to Home screen” ya “Install app” select karo.');
-    }
-  });
-  window.addEventListener('appinstalled', () => {
-    if (installButton) installButton.hidden = true;
-  });
-  if ('serviceWorker' in navigator && location.protocol === 'https:') {
-    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(console.error));
-  }
-})();
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(console.error));
+}
 </script>
 </body>
 </html>
