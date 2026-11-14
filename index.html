@@ -289,7 +289,7 @@ function settingsHome(){
  <section class="settings-group"><div class="settings-label">SUPPORT</div><div class="settings-card">${row("ⓘ","About HI BUDDY","App version and backend","about")}${row("✉","Help & support","Help using the app","help")}${row("↪","Log out","Sign out from this device","logout")}</div></section>`;
  $("#page").querySelectorAll("[data-setting]").forEach(el=>el.addEventListener("click",()=>settingAction(el.dataset.setting)));
 }
-async async async function savePrivacySettings(){
+async function savePrivacySettings(){
  const host=$("#settings-detail"),privacy={};
  host.querySelectorAll("[data-privacy]").forEach(el=>privacy[el.dataset.privacy]=el.checked);
  try{await setDoc(doc(db,"privateUsers",user.uid),{preferences:{...(profile?.preferences||{}),privacy}},{merge:true});profile={...profile,preferences:{...(profile?.preferences||{}),privacy}};say("Privacy preferences saved");}
