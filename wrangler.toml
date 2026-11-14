@@ -1,0 +1,11 @@
+name = "hi-buddy-upload"
+main = "cloudflare/worker.js"
+compatibility_date = "2026-11-14"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "hibuddy"
+
+[vars]
+PUBLIC_BASE_URL = "https://pub-7cdb2cf78c464ed1b37cb6fec8db256b.r2.dev"
+ALLOWED_ORIGIN = "*"
