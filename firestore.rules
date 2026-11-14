@@ -62,6 +62,21 @@ service cloud.firestore {
       }
     }
 
+    // Status updates: authenticated users can view; owners can publish and delete their own.
+    // Expiry is a display rule (24 hours); no automatic document deletion is performed.
+    match /statuses/{statusId} {
+      allow read: if loggedIn();
+      allow create: if loggedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'username', 'text', 'media', 'createdAt', 'expiresAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 700
+        && request.resource.data.media is string
+        && request.resource.data.media.size() <= 850000
+        && request.resource.data.expiresAt is number;
+      allow update, delete: if loggedIn() && resource.data.uid == request.auth.uid;
+    }
+
     // One-to-one chats.
     match /chats/{chatId} {
       allow read: if loggedIn()
