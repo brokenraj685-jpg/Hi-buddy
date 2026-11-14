@@ -85,7 +85,11 @@ service cloud.firestore {
           && (resource.data.callerUid == request.auth.uid
             || resource.data.calleeUid == request.auth.uid);
       }
-      allow read: if isCallMember();
+      allow get: if isCallMember();
+      // Collection queries must constrain callerUid or calleeUid to the signed-in user.
+      allow list: if loggedIn()
+        && (resource.data.callerUid == request.auth.uid
+          || resource.data.calleeUid == request.auth.uid);
       allow create: if loggedIn()
         && request.resource.data.callerUid == request.auth.uid
         && request.resource.data.calleeUid is string
@@ -101,10 +105,10 @@ service cloud.firestore {
         && request.resource.data.calleeUid == resource.data.calleeUid
         && request.resource.data.chatId == resource.data.chatId
         && request.resource.data.type == resource.data.type
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','offer','answer'])
-        && request.resource.data.status in ['ringing','accepted','rejected','ended']
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','offer','answer','acceptedAt','endedAt'])
+        && request.resource.data.status in ['ringing','accepted','rejected','missed','ended']
         && (request.auth.uid == resource.data.callerUid
-          ? !request.resource.data.diff(resource.data).affectedKeys().hasAny(['answer'])
+          ? !request.resource.data.diff(resource.data).affectedKeys().hasAny(['answer','acceptedAt'])
           : !request.resource.data.diff(resource.data).affectedKeys().hasAny(['offer']));
       allow delete: if false;
 
