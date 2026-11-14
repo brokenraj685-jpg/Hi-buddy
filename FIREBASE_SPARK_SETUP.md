@@ -54,3 +54,27 @@ On a user's next sign-in, the app attempts to move any legacy `photo` and `about
 - The Calls tab shows all, missed, incoming and outgoing calls. Each call row shows caller/recipient, voice/video type, outcome and time.
 - Call outcomes use `ringing`, `accepted`, `rejected`, `missed`, and `ended`. Accepted and ended timestamps are stored for history.
 - Incoming call UI is shown only while the recipient is signed in and the app is open. Background/closed-app incoming-call notifications are not configured.
+
+
+## Latest calling improvements
+
+The current call screen also includes:
+- In-app ringing tone and vibration while a call is ringing (subject to browser/device permissions and audio autoplay restrictions).
+- Live call duration timer after the peer connection becomes connected.
+- Microphone mute, camera on/off, front/back camera switching, speaker output selection where the browser exposes audio output devices, and browser Picture-in-Picture where supported.
+- A minimized floating call panel while navigating inside the app.
+- Caller/callee profile photo lookup from the participant's private profile document.
+- Caller-side ICE restart negotiation when the connection drops; the callee automatically answers the refreshed offer.
+
+These improvements are browser/device dependent. Android browsers do not all expose speaker routing or Picture-in-Picture APIs.
+
+## Background incoming-call notifications and TURN relay
+
+Background/closed-app incoming-call notifications are still not enabled. To enable them, the existing Firebase project needs:
+1. Firebase Cloud Messaging Web Push configured with a VAPID public key.
+2. A messaging service worker and client registration/token flow.
+3. A trusted server process (for example Cloud Functions on a billing-enabled Firebase plan or another secured server) that watches new call documents and sends a push notification to the callee's registered token. Never put Firebase Admin credentials or server send credentials in browser code or this public repository.
+
+Reliable calls across restrictive mobile carrier/Wi-Fi networks also need a TURN relay. A TURN provider must supply the server URL, username and credential (prefer short-lived credentials). These cannot be fabricated by the app; do not paste private TURN credentials into a public GitHub file. The current app continues to use public STUN servers until a secure TURN credential-delivery method is configured.
+
+The existing project remains raj-11988. No collections or existing user/chat data are deleted by these changes.
