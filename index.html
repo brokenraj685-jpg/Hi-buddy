@@ -247,6 +247,18 @@ body{font-size:12px}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{position:fixed;inset:0;width:100%}#app{height:var(--hibuddy-app-height,100dvh);min-height:0}.workspace,.main,.chat-view{min-height:0}.chat-view{height:100%;overflow:hidden}.messages{min-height:0;overscroll-behavior:contain}.composer-wrap{flex:none;position:relative;padding-bottom:max(10px,env(safe-area-inset-bottom))}.composer textarea{max-height:96px;overflow-y:auto;overscroll-behavior:contain}
 .status-compose{display:grid;gap:10px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;margin:12px 0}.status-compose textarea{width:100%;min-height:72px;resize:vertical;border:1px solid var(--line);border-radius:11px;background:var(--panel2);color:var(--ink);padding:10px;font:inherit}.status-compose input[type=file]{font-size:10px;max-width:100%}.status-card{padding:13px;margin:10px 0;border:1px solid var(--line);border-radius:15px;background:var(--panel);display:flex;gap:11px;align-items:flex-start}.status-card .avatar{width:40px;height:40px}.status-content{flex:1;min-width:0}.status-content b{font-size:12px}.status-content small{display:block;color:var(--muted);font-size:9px;margin:3px 0 7px}.status-content p{font-size:12px;line-height:1.5;margin:0;overflow-wrap:anywhere}.status-media{display:block;width:100%;max-height:340px;object-fit:cover;border-radius:12px;margin-top:8px}.status-empty{padding:16px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);font-size:11px;text-align:center}
 @media(max-width:820px){#app{height:var(--hibuddy-app-height,100dvh)}.main{height:100%;min-height:0}.chat-view{height:100%;min-height:0}.composer-wrap{padding-bottom:max(9px,env(safe-area-inset-bottom))}.messages{padding-bottom:12px}}
+
+/* Voice and video calling */
+.call-actions{display:flex;gap:6px;align-items:center}.call-actions .icon-btn{width:34px;min-width:34px;height:34px;font-size:14px}
+.call-overlay{position:fixed;inset:0;z-index:100;background:#061329ee;display:flex;align-items:center;justify-content:center;padding:18px}
+.call-panel{width:min(520px,100%);min-height:300px;background:#102442;color:#fff;border:1px solid #ffffff22;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 25px 90px #0008}
+.call-panel h3{margin:0;font-size:18px}.call-panel p{margin:0;color:#c5d6ed;font-size:12px}
+.call-video-stage{position:relative;flex:1;min-height:220px;background:#07152a;border-radius:16px;overflow:hidden;display:grid;place-items:center}
+.call-remote-video{width:100%;height:100%;max-height:55vh;object-fit:cover}.call-local-video{position:absolute;right:10px;bottom:10px;width:104px;height:140px;object-fit:cover;border:2px solid #fff;border-radius:13px;background:#182b46}
+.call-avatar{font-size:42px;font-weight:850;color:#fff}.call-controls{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.call-control{width:52px;height:52px;border:0;border-radius:50%;background:#294361;color:#fff;font-size:20px}.call-control.end{background:#df3d55}.call-control.accept{background:#16a66b}
+.call-status{font-size:12px;color:#d2e4fa;text-align:center}.call-incoming-actions{display:flex;justify-content:center;gap:22px;padding:10px}
+@media(max-width:820px){.call-panel{min-height:360px;padding:14px}.call-video-stage{min-height:250px}.call-local-video{width:88px;height:118px}.call-actions .icon-btn{width:30px;min-width:30px;height:30px}}
 </style>
 </head>
 <body>
@@ -256,9 +268,9 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{position:fix
 <div class="workspace" id="workspace">
 <aside class="sidebar"><div class="side-head"><h2 id="heading">Messages</h2><div class="side-actions"><button class="icon-btn" id="find" title="Search">⌕</button><button class="icon-btn" id="newchat" title="New chat">＋</button></div></div><div class="search-wrap"><span>⌕</span><input id="searchinput" placeholder="Search usernames or conversations"></div><div id="user-suggestions" class="user-suggestions"></div><div class="chat-list" id="people"></div></aside>
 <main class="main"><div class="welcome" id="empty"><div><div class="welcome-mark">✉</div><h2>Your conversations, together.</h2></div></div>
-<div class="chat-view hidden" id="chat"><div class="chat-head"><button class="icon-btn back-btn" id="back">‹</button><div class="avatar" id="chatavatar">?</div><div><div class="chat-title" id="chatname">Chat</div></div><div class="grow"></div><button class="icon-btn" title="More options" id="chatmore">···</button></div><div class="messages" id="msgs"></div><div class="composer-wrap"><div class="composer"><textarea id="message" rows="1" placeholder="Write a message…"></textarea><button class="send-btn" id="send" title="Send">➤</button></div></div></div><div class="page hidden" id="page"></div></main>
+<div class="chat-view hidden" id="chat"><div class="chat-head"><button class="icon-btn back-btn" id="back">‹</button><div class="avatar" id="chatavatar">?</div><div><div class="chat-title" id="chatname">Chat</div></div><div class="grow"></div><div class="call-actions"><button class="icon-btn" id="voice-call" title="Voice call">☎</button><button class="icon-btn" id="video-call" title="Video call">▣</button></div></div><div class="messages" id="msgs"></div><div class="composer-wrap"><div class="composer"><textarea id="message" rows="1" placeholder="Write a message…"></textarea><button class="send-btn" id="send" title="Send">➤</button></div></div></div><div class="page hidden" id="page"></div></main>
 </div>
-<nav class="bottom-nav"><button class="tab active" data-tab="chats">▤<span>Chats</span></button><button class="tab" data-tab="updates">◉<span>Updates</span></button><button class="tab" data-tab="calls">☎<span>Calls</span></button><button class="tab" data-tab="settings">⚙<span>Settings</span></button></nav></div><div class="toast" id="toast"></div>
+<nav class="bottom-nav"><button class="tab active" data-tab="chats">▤<span>Chats</span></button><button class="tab" data-tab="updates">◉<span>Updates</span></button><button class="tab" data-tab="calls">☎<span>Calls</span></button><button class="tab" data-tab="settings">⚙<span>Settings</span></button></nav></div><div class="toast" id="toast"></div><div id="call-overlay" class="call-overlay hidden" aria-live="polite"></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,deleteUser,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -266,7 +278,7 @@ import{getFirestore,doc,setDoc,getDoc,collection,query,where,onSnapshot,addDoc,s
 const cfg={apiKey:"AIzaSyASzfkpNVtanzi2XQIBYmvxXPTUcqZ6NBM",authDomain:"raj-11988.firebaseapp.com",databaseURL:"https://raj-11988-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"raj-11988",storageBucket:"raj-11988.firebasestorage.app",messagingSenderId:"1080242151967",appId:"1:1080242151967:web:1cc8fb6fc8a9e94b2e2b2a",measurementId:"G-CPHXNZQFNN"};
 const fb=initializeApp(cfg),auth=getAuth(fb),db=getFirestore(fb),$=s=>document.querySelector(s);
 await setPersistence(auth,browserLocalPersistence);
-let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null;
+let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set();
 function say(t){let e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
 function email(p){return p+"@hibuddy.invalid"}
 function finishSignupGate(){if(releaseSignupGate)releaseSignupGate();releaseSignupGate=null;signupGate=null}
@@ -301,8 +313,8 @@ async function signup(){
  }
 }
 async function login(){let p=$("#lphone").value.trim(),pw=$("#lpassword").value;if(!/^\d{10}$/.test(p)||!pw)return say("Enter mobile number and password");try{await signInWithEmailAndPassword(auth,email(p),pw)}catch(e){say(err(e))}}
-onAuthStateChanged(auth,async u=>{if(u&&signupGate){await signupGate;if(auth.currentUser?.uid!==u.uid)return}if(!u){user=null;profile=null;$("#app").classList.add("hidden");$("#auth").classList.remove("hidden");if(stopChats)stopChats();if(stopMsgs)stopMsgs();return}user=u;try{let s=await getDoc(doc(db,"profiles",u.uid));if(!s.exists())throw Error("Profile not found. Please contact support.");let priv=await getDoc(doc(db,"privateUsers",u.uid));let publicData=s.data(),privateData=priv.exists()?priv.data():{};let movePhoto=!!publicData.photo&&!privateData.photo,moveAbout=!!publicData.about&&!privateData.about;if(movePhoto||moveAbout){if(movePhoto)privateData.photo=publicData.photo;if(moveAbout)privateData.about=publicData.about;await setDoc(doc(db,"privateUsers",u.uid),{...(movePhoto?{photo:privateData.photo}:{}),...(moveAbout?{about:privateData.about}:{})},{merge:true});await updateDoc(doc(db,"profiles",u.uid),{...(publicData.photo?{photo:deleteField()}:{}),...(publicData.about?{about:deleteField()}:{})});delete publicData.photo;delete publicData.about;}profile={...publicData,...privateData};$("#auth").classList.add("hidden");$("#app").classList.remove("hidden");try{history.replaceState({hibuddy:true,screen:"home"},"",location.pathname+location.search);history.pushState({hibuddy:true,screen:"home"},"",location.pathname+location.search)}catch{}listen()}catch(e){say(err(e))}});
-function listen(){if(stopChats)stopChats();stopChats=onSnapshot(query(collection(db,"chats"),where("members","array-contains",user.uid)),s=>{chats=s.docs.map(d=>({id:d.id,...d.data()}));draw()},e=>say(err(e)))}
+onAuthStateChanged(auth,async u=>{if(u&&signupGate){await signupGate;if(auth.currentUser?.uid!==u.uid)return}if(!u){user=null;profile=null;$("#app").classList.add("hidden");$("#auth").classList.remove("hidden");if(stopChats)stopChats();if(stopMsgs)stopMsgs();if(stopIncomingCalls){stopIncomingCalls();stopIncomingCalls=null}cleanupCall();return}user=u;try{let s=await getDoc(doc(db,"profiles",u.uid));if(!s.exists())throw Error("Profile not found. Please contact support.");let priv=await getDoc(doc(db,"privateUsers",u.uid));let publicData=s.data(),privateData=priv.exists()?priv.data():{};let movePhoto=!!publicData.photo&&!privateData.photo,moveAbout=!!publicData.about&&!privateData.about;if(movePhoto||moveAbout){if(movePhoto)privateData.photo=publicData.photo;if(moveAbout)privateData.about=publicData.about;await setDoc(doc(db,"privateUsers",u.uid),{...(movePhoto?{photo:privateData.photo}:{}),...(moveAbout?{about:privateData.about}:{})},{merge:true});await updateDoc(doc(db,"profiles",u.uid),{...(publicData.photo?{photo:deleteField()}:{}),...(publicData.about?{about:deleteField()}:{})});delete publicData.photo;delete publicData.about;}profile={...publicData,...privateData};$("#auth").classList.add("hidden");$("#app").classList.remove("hidden");try{history.replaceState({hibuddy:true,screen:"home"},"",location.pathname+location.search);history.pushState({hibuddy:true,screen:"home"},"",location.pathname+location.search)}catch{}listen()}catch(e){say(err(e))}});
+function listen(){if(stopChats)stopChats();stopChats=onSnapshot(query(collection(db,"chats"),where("members","array-contains",user.uid)),s=>{chats=s.docs.map(d=>({id:d.id,...d.data()}));draw()},e=>say(err(e)));listenForIncomingCalls()}
 function draw(){
  let term=$("#searchinput").value.toLowerCase();
  let rows=chats.filter(c=>(c.names?.[c.members.find(x=>x!==user.uid)]||"").toLowerCase().includes(term));
@@ -468,12 +480,121 @@ function tab(t){
  // Make the main page visible on mobile for Settings, Updates and Calls
  $("#workspace").classList.add("chat-open");
  if(t==="updates")renderUpdates();
- if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><div class="settings-card"><b>Calling is not available yet</b><p class="tiny">Voice and video calling need a calling service and permissions.</p></div>';
+ if(t==="calls")$("#page").innerHTML='<h2>Calls</h2><p class="page-sub">Voice and video calls are available from the call buttons inside any one-to-one chat.</p><div class="settings-card"><b>How to call</b><p class="tiny">Open Chats, select a person, then tap the phone icon for voice or the camera icon for video. Allow microphone/camera access when your browser asks.</p><p class="tiny">Keep HI BUDDY open while calling. Calls use peer-to-peer WebRTC; some mobile networks may need a TURN relay for reliable connection.</p></div>';
  if(t==="settings")settingsHome();
 }
+
+function callOtherUser(){
+ const c=chats.find(x=>x.id===active);
+ return c?.members?.find(x=>x!==user?.uid)||null;
+}
+function showCallPanel(kind,title,status,showVideo=true,incoming=false){
+ const host=$("#call-overlay");if(!host)return;
+ host.classList.remove("hidden");
+ host.innerHTML='<section class="call-panel"><div><h3>'+esc(title)+'</h3><p id="call-status" class="call-status">'+esc(status)+'</p></div><div class="call-video-stage">'+(showVideo?'<video id="call-remote-video" class="call-remote-video" autoplay playsinline></video><video id="call-local-video" class="call-local-video" autoplay muted playsinline></video>':'<div class="call-avatar">HI</div><audio id="call-remote-audio" autoplay></audio>')+'</div><div class="call-controls">'+(incoming?'<button class="call-control end" id="decline-call" title="Decline">✕</button><button class="call-control accept" id="accept-call" title="Accept">☎</button>':'<button class="call-control" id="mute-call" title="Mute microphone">🎙</button>'+(showVideo?'<button class="call-control" id="camera-call" title="Turn camera off">▣</button>':'')+'<button class="call-control end" id="end-call" title="End call">✕</button>')+'</div></section>';
+ if(incoming){$("#decline-call").onclick=declineIncomingCall;$("#accept-call").onclick=acceptIncomingCall}
+ else{
+  $("#end-call").onclick=endCall;
+  $("#mute-call").onclick=()=>{const track=localCallStream?.getAudioTracks()[0];if(track){track.enabled=!track.enabled;$("#mute-call").textContent=track.enabled?"🎙":"🔇"}};
+  const camera=$("#camera-call");if(camera)camera.onclick=()=>{const track=localCallStream?.getVideoTracks()[0];if(track){track.enabled=!track.enabled;camera.textContent=track.enabled?"▣":"🚫"}};
+ }
+}
+function setCallStatus(s){const el=$("#call-status");if(el)el.textContent=s}
+function attachCallMedia(videoMode){
+ const remote=videoMode?$("#call-remote-video"):$("#call-remote-audio"),local=$("#call-local-video");
+ if(remote&&remoteCallStream){remote.srcObject=remoteCallStream;remote.play?.().catch(()=>{})}
+ if(local&&localCallStream){local.srcObject=localCallStream;local.play?.().catch(()=>{})}
+}
+async function getCallMedia(type){
+ if(!navigator.mediaDevices?.getUserMedia)throw Error("Microphone/camera access needs HTTPS and a supported browser");
+ return navigator.mediaDevices.getUserMedia({audio:true,video:type==="video"?{facingMode:"user",width:{ideal:640},height:{ideal:480}}:false});
+}
+function initPeer(callRef,role,type){
+ const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"}]});
+ callPeer=pc;remoteCallStream=new MediaStream();
+ localCallStream.getTracks().forEach(track=>pc.addTrack(track,localCallStream));
+ pc.ontrack=e=>{e.streams[0]?.getTracks().forEach(t=>remoteCallStream.addTrack(t));attachCallMedia(type==="video")};
+ pc.onconnectionstatechange=()=>{if(pc.connectionState==="connected")setCallStatus("Connected");if(["failed","disconnected"].includes(pc.connectionState))setCallStatus("Connection interrupted. Trying to reconnect…")};
+ const ownPath=role==="caller"?"callerCandidates":"calleeCandidates";
+ const otherPath=role==="caller"?"calleeCandidates":"callerCandidates";
+ pc.onicecandidate=e=>{if(e.candidate)addDoc(collection(db,"calls",callRef.id,ownPath),e.candidate.toJSON()).catch(x=>say("Could not send call network data: "+err(x)))};
+ stopRemoteCandidates=onSnapshot(collection(db,"calls",callRef.id,otherPath),snap=>snap.docChanges().forEach(change=>{if(change.type==="added")pc.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(()=>{})}));
+ stopCallDoc=onSnapshot(callRef,async snap=>{
+  if(!snap.exists())return;
+  const data=snap.data();
+  if(role==="caller"&&data.answer&&!pc.currentRemoteDescription){try{await pc.setRemoteDescription(new RTCSessionDescription(data.answer));setCallStatus("Connecting…")}catch(e){say("Call setup failed: "+err(e))}}
+  if(data.status==="accepted")setCallStatus("Connecting…");
+  if(data.status==="rejected"){say("Call declined");cleanupCall()}
+  if(data.status==="ended"){say("Call ended");cleanupCall()}
+ });
+ return pc;
+}
+async function startCall(type){
+ if(!active||!user)return say("Open a chat first");
+ if(currentCall)return say("A call is already active");
+ const target=callOtherUser();if(!target)return say("Chat partner not found");
+ try{
+  localCallStream=await getCallMedia(type);
+  const callRef=doc(collection(db,"calls"));
+  currentCall={id:callRef.id,ref:callRef,role:"caller",type,targetUid:target};
+  const peer=initPeer(callRef,"caller",type);
+  showCallPanel(type, type==="video"?"Video call":"Voice call","Calling…",type==="video");
+  attachCallMedia(type==="video");
+  const offer=await peer.createOffer();await peer.setLocalDescription(offer);
+  await setDoc(callRef,{callerUid:user.uid,calleeUid:target,callerName:profile?.name||"HI BUDDY",calleeName:chats.find(x=>x.id===active)?.names?.[target]||"Buddy",type,status:"ringing",offer:{type:offer.type,sdp:offer.sdp},createdAt:serverTimestamp()});
+ }catch(e){say("Could not start call: "+err(e));cleanupCall()}
+}
+function listenForIncomingCalls(){
+ if(stopIncomingCalls)stopIncomingCalls();
+ if(!user)return;
+ stopIncomingCalls=onSnapshot(query(collection(db,"calls"),where("calleeUid","==",user.uid),limit(25)),snap=>{
+  for(const d of snap.docs){
+   const data=d.data();
+   if(data.status==="ringing"&&!currentCall&&!seenIncomingCalls.has(d.id)){
+    seenIncomingCalls.add(d.id);currentCall={id:d.id,ref:d.ref,role:"callee",type:data.type||"audio",targetUid:data.callerUid};
+    showCallPanel(data.type||"audio",data.callerName||"Incoming call","Incoming "+(data.type==="video"?"video":"voice")+" call",data.type==="video",true);
+    break;
+   }
+  }
+ },e=>say("Incoming call listener: "+err(e)));
+}
+async function acceptIncomingCall(){
+ if(!currentCall||currentCall.role!=="callee")return;
+ try{
+  const ref=currentCall.ref,snap=await getDoc(ref);if(!snap.exists())throw Error("Call no longer exists");
+  const data=snap.data();if(data.status!=="ringing"||!data.offer)throw Error("Caller has ended this call");
+  localCallStream=await getCallMedia(data.type||"audio");
+  const peer=initPeer(ref,"callee",data.type||"audio");
+  showCallPanel(data.type==="video"?"video":"audio",data.callerName||"Call","Connecting…",data.type==="video");
+  attachCallMedia(data.type==="video");
+  await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
+  const answer=await peer.createAnswer();await peer.setLocalDescription(answer);
+  await updateDoc(ref,{answer:{type:answer.type,sdp:answer.sdp},status:"accepted"});
+ }catch(e){say("Could not accept call: "+err(e));cleanupCall()}
+}
+async function declineIncomingCall(){
+ if(!currentCall)return;
+ try{await updateDoc(currentCall.ref,{status:"rejected"})}catch(e){say(err(e))}
+ cleanupCall();
+}
+async function endCall(){
+ if(!currentCall)return;
+ const ref=currentCall.ref;
+ try{await updateDoc(ref,{status:"ended"})}catch(e){say(err(e))}
+ cleanupCall();
+}
+function cleanupCall(){
+ if(stopCallDoc){stopCallDoc();stopCallDoc=null}
+ if(stopRemoteCandidates){stopRemoteCandidates();stopRemoteCandidates=null}
+ if(callPeer){callPeer.ontrack=null;callPeer.onicecandidate=null;callPeer.close();callPeer=null}
+ if(localCallStream){localCallStream.getTracks().forEach(t=>t.stop());localCallStream=null}
+ if(remoteCallStream){remoteCallStream.getTracks().forEach(t=>t.stop());remoteCallStream=null}
+ currentCall=null;$("#call-overlay").classList.add("hidden");$("#call-overlay").innerHTML="";
+}
+
 function toggleTheme(){let next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;try{localStorage.setItem("hibuddy-theme",next)}catch{}}
 try{let saved=localStorage.getItem("hibuddy-theme");if(saved)document.documentElement.dataset.theme=saved;let fs=localStorage.getItem("hibuddy-chat-font");if(fs)document.documentElement.style.setProperty("--chat-font",fs+"px")}catch{}
-$("#theme").onclick=toggleTheme;$("#add").onclick=newChat;$("#newchat").onclick=newChat;$("#settings").onclick=()=>tab("settings");$("#find").onclick=()=>$("#searchinput").focus();$("#searchinput").oninput=()=>{draw();searchUsers()};$("#people").onclick=e=>{let b=e.target.closest("[data-id]");if(b)openChat(b.dataset.id)};$("#back").onclick=()=>closeChatView();$("#send").onclick=send;$("#message").oninput=()=>{const el=$("#message");el.style.height="auto";el.style.height=Math.min(el.scrollHeight,96)+"px"};$("#message").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}};document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+$("#theme").onclick=toggleTheme;$("#voice-call").onclick=()=>startCall("audio");$("#video-call").onclick=()=>startCall("video");$("#add").onclick=newChat;$("#newchat").onclick=newChat;$("#settings").onclick=()=>tab("settings");$("#find").onclick=()=>$("#searchinput").focus();$("#searchinput").oninput=()=>{draw();searchUsers()};$("#people").onclick=e=>{let b=e.target.closest("[data-id]");if(b)openChat(b.dataset.id)};$("#back").onclick=()=>closeChatView();$("#send").onclick=send;$("#message").oninput=()=>{const el=$("#message");el.style.height="auto";el.style.height=Math.min(el.scrollHeight,96)+"px"};$("#message").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}};document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 function closeChatView(){if(stopMsgs){stopMsgs();stopMsgs=null}$("#workspace").classList.remove("chat-open");$("#chat").classList.add("hidden");$("#page").classList.add("hidden");$("#empty").classList.remove("hidden");/* Keep active ID and all Firestore messages intact. */}
 function handleAppBack(){if($("#auth").classList.contains("hidden")){if(!$("#chat").classList.contains("hidden"))closeChatView();else if(!$("#page").classList.contains("hidden"))tab("chats");else closeChatView()}try{history.pushState({hibuddy:true,screen:"home"},"",location.pathname+location.search)}catch{}}
 window.addEventListener("popstate",handleAppBack);window.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#chat").classList.contains("hidden"))closeChatView()});
