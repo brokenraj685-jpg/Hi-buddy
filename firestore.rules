@@ -11,6 +11,12 @@ service cloud.firestore {
         || exists(/databases/$(database)/documents/privateUsers/$(uidB)/blocked/$(uidA));
     }
 
+    function allowsNewChats(uid) {
+      return !exists(/databases/$(database)/documents/privateUsers/$(uid))
+        || get(/databases/$(database)/documents/privateUsers/$(uid)).data
+          .get('preferences', {}).get('privacy', {}).get('allowNewChats', true) == true;
+    }
+
     // Public directory: only basic discovery fields should be kept here.
     match /profiles/{uid} {
       allow read: if true;
@@ -54,6 +60,11 @@ service cloud.firestore {
         && request.resource.data.members.hasAny([request.auth.uid])
         && !isBlockedBetween(
           request.auth.uid,
+          request.resource.data.members[0] == request.auth.uid
+            ? request.resource.data.members[1]
+            : request.resource.data.members[0]
+        )
+        && allowsNewChats(
           request.resource.data.members[0] == request.auth.uid
             ? request.resource.data.members[1]
             : request.resource.data.members[0]
