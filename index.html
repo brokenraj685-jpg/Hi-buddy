@@ -562,8 +562,8 @@ function renderCallHistory(){
  $("#page").querySelectorAll("[data-call-filter]").forEach(b=>b.onclick=()=>{callFilter=b.dataset.callFilter;$("#page").querySelectorAll("[data-call-filter]").forEach(x=>x.classList.toggle("active",x===b));drawCallHistory()});
  if(stopCallHistoryCaller)stopCallHistoryCaller();if(stopCallHistoryCallee)stopCallHistoryCallee();
  callHistoryMap.clear();
- stopCallHistoryCaller=onSnapshot(query(collection(db,"calls"),where("callerUid","==",user.uid),limit(100)),s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")callHistoryMap.delete(ch.doc.id);else callHistoryMap.set(ch.doc.id,{id:ch.doc.id,...ch.doc.data()})});drawCallHistory()},e=>say("Call history: "+err(e)));
- stopCallHistoryCallee=onSnapshot(query(collection(db,"calls"),where("calleeUid","==",user.uid),limit(100)),s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")callHistoryMap.delete(ch.doc.id);else callHistoryMap.set(ch.doc.id,{id:ch.doc.id,...ch.doc.data()})});drawCallHistory()},e=>say("Call history: "+err(e)));
+ stopCallHistoryCaller=onSnapshot(query(collection(db,"calls"),where("callerUid","==",user.uid)),s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")callHistoryMap.delete(ch.doc.id);else callHistoryMap.set(ch.doc.id,{id:ch.doc.id,...ch.doc.data()})});drawCallHistory()},e=>say("Call history: "+err(e)));
+ stopCallHistoryCallee=onSnapshot(query(collection(db,"calls"),where("calleeUid","==",user.uid)),s=>{s.docChanges().forEach(ch=>{if(ch.type==="removed")callHistoryMap.delete(ch.doc.id);else callHistoryMap.set(ch.doc.id,{id:ch.doc.id,...ch.doc.data()})});drawCallHistory()},e=>say("Call history: "+err(e)));
 }
 
 function callOtherUser(){
@@ -632,7 +632,7 @@ async function startCall(type){
 function listenForIncomingCalls(){
  if(stopIncomingCalls)stopIncomingCalls();
  if(!user)return;
- stopIncomingCalls=onSnapshot(query(collection(db,"calls"),where("calleeUid","==",user.uid),limit(25)),snap=>{
+ stopIncomingCalls=onSnapshot(query(collection(db,"calls"),where("calleeUid","==",user.uid)),snap=>{
   for(const d of snap.docs){
    const data=d.data();
    if(data.status==="ringing"&&data.offer&&!currentCall&&!seenIncomingCalls.has(d.id)){
