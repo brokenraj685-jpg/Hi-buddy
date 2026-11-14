@@ -16,6 +16,7 @@ Do not create a new Firebase project or delete any Firestore collections.
 
 - A user's block list is stored at `privateUsers/{uid}/blocked/{blockedUid}`.
 - A blocked relationship prevents creation of a new one-to-one chat and prevents sending messages in an existing chat.
+- The private `preferences.privacy.allowNewChats` setting can prevent other users from starting new chats with the account.
 - Existing chat history remains readable to its members.
 - Private preferences, profile photo and About data are stored in `privateUsers/{uid}`.
 - Public `profiles/{uid}` documents remain readable for username discovery. Keep only basic directory fields such as `name`, `username`, and `createdAt` there.
