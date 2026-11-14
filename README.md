@@ -13,3 +13,11 @@ Important:
 - Mobile number remains an account identifier; it is not verified by SMS.
 - Existing Updates and Calls remain placeholders.
 - Replace the existing index.html and README.md in the repository root with these files. Keep manifest.webmanifest, sw.js and icons/ from your current PWA package unchanged.
+
+
+## Final mobile UI update (v1.2.0)
+- Removed in-app install button while keeping the PWA manifest and service worker.
+- Refined compact bottom navigation and settings layout for mobile screens.
+- Added working profile-name editing, theme, chat text-size, browser notification permission, storage estimate/cache controls, and Firebase-saved privacy preference fields.
+- Clearly labels advanced controls that still require backend enforcement (blocking, read receipts, last seen, online visibility, and FCM background delivery).
+- Existing Firebase project configuration and authentication/Firestore flows are retained.

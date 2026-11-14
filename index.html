@@ -190,6 +190,42 @@ body{font-size:12px}
 .settings-detail input,.settings-detail select{width:100%;height:38px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--ink);padding:0 10px;font-size:12px;margin:7px 0}
 .settings-detail button{border:0;border-radius:9px;background:var(--brand);color:white;padding:9px 12px;font-size:11px;font-weight:800}
 @media(max-width:420px){.topbar{padding-inline:12px}.bottom-nav{height:66px}.bottom-nav .tab{gap:5px}.bottom-nav .tab span{font-size:10px}.page{padding:13px 12px 20px}.setting-row{min-height:45px}}
+
+/* HI BUDDY final mobile polish */
+.install-btn,#install,#installBtn,#install-button,[data-install-button]{display:none!important}
+.settings-titlebar{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;gap:12px}
+.settings-titlebar h2{margin:0!important;font-size:20px!important;font-weight:850}
+.settings-titlebar p{margin:3px 0 0;color:var(--muted);font-size:10px}
+.settings-title-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:13px;background:var(--tint);color:var(--brand);font-size:18px}
+.settings-hero{margin:0 0 14px;padding:11px 12px;border-radius:15px;box-shadow:0 4px 16px #102e6408}
+.settings-hero .person-info{flex:1;min-width:0}.settings-hero .person-name{font-size:12px;font-weight:850}.settings-hero .person-preview{font-size:10px}
+.settings-group{margin:11px 0}.settings-label{font-size:9px;letter-spacing:.12em;padding:0 3px 6px}
+.settings-card{padding:2px 10px;border-radius:14px;box-shadow:0 4px 16px #102e6408}
+.setting-row{width:100%;display:flex;align-items:center;text-align:left;gap:10px;min-height:48px;padding:7px 1px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);transition:background .16s,transform .16s}
+.setting-row:last-child{border-bottom:0}.setting-row:active{transform:scale(.99)}
+.setting-icon{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;background:var(--tint);color:var(--brand);font-size:14px;flex:none}
+.setting-meta{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}.setting-meta b{font-size:11px;font-weight:800}.setting-meta small{font-size:9px;color:var(--muted);font-weight:500}
+.setting-value{font-size:10px;color:var(--muted);white-space:nowrap}
+.setting-action{border:1px solid var(--line);background:var(--panel2);color:var(--brand);border-radius:10px;padding:7px 10px;font-size:10px;font-weight:800}
+.settings-detail{margin:12px 0 20px;padding:14px;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:0 8px 24px #102e6409;animation:rise .2s ease both}
+.detail-heading{font-size:13px;font-weight:900;margin-bottom:8px}.settings-detail p{font-size:10px;line-height:1.6;color:var(--muted);margin:6px 0 12px}
+.settings-field{display:flex;flex-direction:column;gap:6px;font-size:10px;font-weight:800;color:var(--muted);margin:10px 0}
+.settings-field input,.settings-field select{height:39px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--ink);padding:0 10px;font:inherit;font-size:11px;min-width:0}
+.settings-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.settings-toggle:last-of-type{border-bottom:0}.settings-toggle span{display:flex;flex-direction:column;gap:3px}.settings-toggle b{font-size:10px}.settings-toggle small{font-size:9px;color:var(--muted)}
+.settings-toggle input{accent-color:var(--brand);width:18px;height:18px;flex:none}
+.primary-setting-btn,.secondary-setting-btn,.danger-setting-btn{width:100%;min-height:38px;border:0;border-radius:11px;padding:9px 12px;margin-top:10px;font-size:11px;font-weight:850;transition:transform .16s,filter .16s}
+.primary-setting-btn{background:linear-gradient(135deg,#087cf0,#10b9e8);color:white;box-shadow:0 6px 16px #087cf02b}
+.secondary-setting-btn{background:var(--tint);color:var(--brand)}.danger-setting-btn{background:#fff0f0;color:#c03939}
+.settings-info{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:10px}.settings-info span{color:var(--muted)}.settings-info b{font-weight:800}
+.settings-note{font-size:9px!important;color:var(--muted)!important}
+.bottom-nav{height:64px!important;gap:5px;padding:5px 8px max(5px,env(safe-area-inset-bottom))!important;background:color-mix(in srgb,var(--panel) 92%,transparent)!important;backdrop-filter:blur(20px);border-top:1px solid var(--line);box-shadow:0 -7px 22px #102e6408}
+.tab{position:relative;flex:1;min-width:0;border:1px solid transparent!important;border-radius:13px!important;gap:3px!important;font-size:17px!important;transition:background .18s,color .18s,transform .18s!important}
+.tab span{font-size:9px!important;font-weight:800;letter-spacing:.01em}.tab.active{background:var(--tint)!important;border-color:color-mix(in srgb,var(--brand) 12%,transparent)!important;color:var(--brand)!important;transform:translateY(-1px)}
+.tab:active{transform:scale(.96)}
+@media(max-width:820px){.bottom-nav{height:62px!important}.page{padding:13px!important}.settings-titlebar h2{font-size:19px!important}.settings-group{margin:10px 0}.setting-row{min-height:46px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
@@ -226,52 +262,66 @@ async function send(){let t=$("#message").value.trim();if(!t||!active)return;$("
 async function newChat(){let u=prompt("Enter exact username");if(!u)return;try{let s=await getDocs(query(collection(db,"profiles"),where("username","==",u.trim().toLowerCase()),limit(1)));if(s.empty)return say("Username not found");let target=s.docs[0];if(target.id===user.uid)return say("This is your own username");let old=chats.find(c=>c.members.includes(target.id)&&c.members.includes(user.uid));if(old)return openChat(old.id);let names={[user.uid]:profile.name,[target.id]:target.data().name};let r=await addDoc(collection(db,"chats"),{members:[user.uid,target.id],names,lastMessage:"",createdAt:serverTimestamp()});say("Chat created");setTimeout(()=>{let c=chats.find(x=>x.id===r.id);if(c)openChat(c.id)},700)}catch(e){say(err(e))}}
 function settingsHome(){
  const n=esc(profile?.name||"HI BUDDY"),u=esc(profile?.username||"");
- const row=(icon,name,desc,action,label="Open")=>`<div class="setting-row"><div class="setting-left"><span class="setting-icon">${icon}</span><div class="setting-meta"><div class="setting-name">${name}</div><div class="setting-desc">${desc}</div></div></div><button class="setting-action" data-setting="${action}">${label} ›</button></div>`;
- const fontSize=localStorage.getItem("hibuddy-chat-font")||"12";
- $("#page").innerHTML=`<h2>Settings</h2>
- <div class="settings-hero"><div class="avatar">${esc(ini(profile?.name||"HB"))}</div><div class="person-info"><div class="person-name">${n}</div><div class="person-preview">@${u}</div></div><button class="setting-action" data-setting="profile">Edit ›</button></div>
- <section class="settings-group"><div class="settings-label">Account</div><div class="settings-card">${row("♙","Profile","Name and account details","profile")}${row("🔐","Account security","Session and sign out","security")}</div></section>
- <section class="settings-group"><div class="settings-label">Privacy</div><div class="settings-card">${row("🔒","Privacy","Understand available privacy controls","privacy")}</div></section>
- <section class="settings-group"><div class="settings-label">Chats</div><div class="settings-card">${row("💬","Chat settings","Message text size and chat display","chats")}${row("🗂","Storage and data","Browser storage information","storage")}</div></section>
- <section class="settings-group"><div class="settings-label">Preferences</div><div class="settings-card">${row("◐","Appearance","Light or dark theme","appearance",document.documentElement.dataset.theme==="dark"?"Dark":"Light")}${row("♬","Notifications","Browser notification permission","notifications")}${row("🌐","App language","Current interface language","language","English")}</div></section>
- <section class="settings-group"><div class="settings-label">Support</div><div class="settings-card">${row("ⓘ","About HI BUDDY","App information and version","about")}${row("✉","Help and support","Contact support","help")}${row("↪","Log out","Sign out from this device","logout","Log out")}</div></section><div id="settings-detail"></div>`;
- $("#page").querySelectorAll("[data-setting]").forEach(b=>b.onclick=()=>settingAction(b.dataset.setting));
+ const row=(icon,name,desc,action,value="›")=>`<button type="button" class="setting-row" data-setting="${action}"><span class="setting-icon">${icon}</span><span class="setting-meta"><b>${name}</b><small>${desc}</small></span><span class="setting-value">${value}</span></button>`;
+ const theme=document.documentElement.dataset.theme==="dark"?"Dark":"Light";
+ const size=localStorage.getItem("hibuddy-chat-font")||"12";
+ const privacy=profile?.preferences?.privacy||{};
+ const toggle=(key,title,desc)=>`<label class="settings-toggle"><span><b>${title}</b><small>${desc}</small></span><input type="checkbox" data-privacy="${key}" ${privacy[key]===false?"":"checked"}></label>`;
+ $("#page").innerHTML=`<div class="settings-titlebar"><div><h2>Settings</h2><p>Account, privacy and app preferences</p></div><span class="settings-title-icon">⚙</span></div>
+ <div class="settings-hero"><div class="avatar">${esc(ini(profile?.name||"HB"))}</div><div class="person-info"><div class="person-name">${n}</div><div class="person-preview">@${u}</div></div><button class="setting-action" data-setting="profile">Edit</button></div>
+ <section class="settings-group"><div class="settings-label">ACCOUNT</div><div class="settings-card">${row("♙","Profile","Display name and account details","profile")}${row("🔐","Account & security","Signed-in session and logout","security")}</div></section>
+ <section class="settings-group"><div class="settings-label">PRIVACY</div><div class="settings-card">${row("🔒","Privacy controls","Save your privacy preferences","privacy")}${row("🚫","Blocked contacts","Blocking is not available yet","blocked","Not available")}</div></section>
+ <section class="settings-group"><div class="settings-label">CHATS</div><div class="settings-card">${row("💬","Chat appearance","Message size and send preferences","chats",size+" px")}${row("🗂","Storage & data","Browser storage and app cache","storage")}</div></section>
+ <section class="settings-group"><div class="settings-label">PREFERENCES</div><div class="settings-card">${row("◐","Appearance","Choose light or dark mode","appearance",theme)}${row("♬","Notifications","Browser notification permission","notifications")}${row("🌐","Language","English interface","language","English")}</div></section>
+ <section class="settings-group"><div class="settings-label">SUPPORT</div><div class="settings-card">${row("ⓘ","About HI BUDDY","App version and backend information","about")}${row("✉","Help & support","Help using the app","help")}${row("↪","Log out","Sign out from this device","logout")}</div></section>
+ <div id="settings-detail" class="settings-detail-host" aria-live="polite"></div>`;
+ $("#page").querySelectorAll("[data-setting]").forEach(b=>b.addEventListener("click",()=>settingAction(b.dataset.setting)));
+}
+async function savePrivacySettings(){
+ const host=$("#settings-detail"),privacy={};
+ host.querySelectorAll("[data-privacy]").forEach(el=>privacy[el.dataset.privacy]=el.checked);
+ try{await setDoc(doc(db,"profiles",user.uid),{preferences:{...(profile?.preferences||{}),privacy}},{merge:true});profile={...profile,preferences:{...(profile?.preferences||{}),privacy}};say("Privacy preferences saved");}
+ catch(e){say(err(e));}
 }
 function settingAction(which){
- const box=$("#settings-detail");
- if(!box)return;
+ const box=$("#settings-detail");if(!box)return;
  if(which==="appearance"){toggleTheme();settingsHome();say("Theme updated");return}
- if(which==="logout"){if(confirm("Log out from HI BUDDY?"))signOut(auth);return}
+ if(which==="logout"){if(confirm("Log out from HI BUDDY on this device?"))signOut(auth).catch(e=>say(err(e)));return}
  if(which==="profile"){
-  box.innerHTML=`<div class="settings-detail"><b>Edit profile name</b><input id="edit-profile-name" maxlength="50" value="${esc(profile.name||"")}" aria-label="Profile name"><button id="save-profile-name">Save changes</button></div>`;
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Edit profile</div><label class="settings-field">Display name<input id="edit-profile-name" maxlength="50" value="${esc(profile?.name||"")}"></label><label class="settings-field">Username<input value="@${esc(profile?.username||"")}" disabled></label><button class="primary-setting-btn" id="save-profile-name">Save changes</button></div>`;
   $("#save-profile-name").onclick=async()=>{let name=$("#edit-profile-name").value.trim();if(!name)return say("Enter your name");try{await updateDoc(doc(db,"profiles",user.uid),{name});profile={...profile,name};settingsHome();say("Profile updated")}catch(e){say(err(e))}};return;
  }
- if(which==="notifications"){
-  if(!("Notification" in window)){box.innerHTML='<div class="settings-detail"><b>Notifications</b><p class="tiny">This browser does not support web notifications.</p></div>';return}
-  const state=Notification.permission;
-  box.innerHTML=`<div class="settings-detail"><b>Browser notifications</b><p class="tiny">Permission status: ${esc(state)}. Permission alone does not enable background message delivery.</p>${state==="default"?'<button id="allow-notifications">Allow notifications</button>':state==="denied"?'<p class="tiny">Notifications are blocked in browser site settings.</p>':'<p class="tiny">Permission is allowed for this site.</p>'}</div>`;
-  const b=$("#allow-notifications");if(b)b.onclick=async()=>{try{const result=await Notification.requestPermission();settingAction("notifications");say("Notification permission: "+result)}catch(e){say("Could not request notification permission")}};return;
- }
  if(which==="security"){
-  box.innerHTML='<div class="settings-detail"><b>Account session</b><p class="tiny">Your sign-in session stays on this device until you log out. Keep your password private.</p><button id="security-logout">Log out</button></div>';
-  $("#security-logout").onclick=()=>{if(confirm("Log out from this device?"))signOut(auth)};return;
- }
- if(which==="chats"){
-  const v=localStorage.getItem("hibuddy-chat-font")||"12";
-  box.innerHTML=`<div class="settings-detail"><b>Chat display</b><label for="chat-font-size" class="tiny">Message text size</label><select id="chat-font-size"><option value="11" ${v==="11"?"selected":""}>Small</option><option value="12" ${v==="12"?"selected":""}>Medium</option><option value="14" ${v==="14"?"selected":""}>Large</option><option value="16" ${v==="16"?"selected":""}>Extra large</option></select><button id="save-chat-display">Save preference</button></div>`;
-  $("#save-chat-display").onclick=()=>{const size=$("#chat-font-size").value;localStorage.setItem("hibuddy-chat-font",size);document.documentElement.style.setProperty("--chat-font",size+"px");document.querySelectorAll(".bubble").forEach(x=>x.style.fontSize=size+"px");say("Chat display saved")};return;
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Account & security</div><p>Your account is authenticated with the existing Firebase Authentication project. Your current sign-in session is stored on this device.</p><div class="settings-info"><span>Username</span><b>@${esc(profile?.username||"")}</b></div><div class="settings-info"><span>Authentication</span><b>Firebase Auth</b></div><button class="danger-setting-btn" id="security-logout">Log out</button></div>`;
+  $("#security-logout").onclick=()=>{if(confirm("Log out from this device?"))signOut(auth).catch(e=>say(err(e)))};return;
  }
  if(which==="privacy"){
-  box.innerHTML='<div class="settings-detail"><b>Privacy information</b><p class="tiny">This build currently supports account sign-in and private one-to-one chat membership. WhatsApp-style Last Seen, Online visibility, Read Receipts, Status audience and Blocked Contacts are not implemented in the current backend, so they are not shown as active switches.</p></div>';return;
+  const p=profile?.preferences?.privacy||{};
+  const t=(key,title,desc)=>`<label class="settings-toggle"><span><b>${title}</b><small>${desc}</small></span><input type="checkbox" data-privacy="${key}" ${p[key]===false?"":"checked"}></label>`;
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Privacy preferences</div><p>These choices are saved in your Firebase profile. Important: the current chat/presence code does not yet enforce these privacy rules for other users.</p>${t("showProfilePhoto","Profile photo visibility","Preference only; enforcement not implemented")}${t("showAbout","About information visibility","Preference only; enforcement not implemented")}${t("showOnline","Online status","Online visibility control is not implemented")}${t("readReceipts","Read receipts","Read/delivered receipts are not implemented")}${t("lastSeen","Last seen","Last-seen tracking is not implemented")}<button class="primary-setting-btn" id="save-privacy">Save preferences</button></div>`;
+  $("#save-privacy").onclick=savePrivacySettings;return;
+ }
+ if(which==="blocked"){
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Blocked contacts</div><p>Contact blocking is not implemented in the current Firebase chat flow. No contact will be blocked by changing this screen.</p><span class="settings-note">Feature requires Firestore rules and chat-send enforcement.</span></div>`;return;
+ }
+ if(which==="chats"){
+  const v=localStorage.getItem("hibuddy-chat-font")||"12",send=localStorage.getItem("hibuddy-enter-send")!=="false";
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Chat appearance</div><label class="settings-field">Message text size<select id="chat-font-size"><option value="11" ${v==="11"?"selected":""}>Small</option><option value="12" ${v==="12"?"selected":""}>Medium</option><option value="14" ${v==="14"?"selected":""}>Large</option><option value="16" ${v==="16"?"selected":""}>Extra large</option></select></label><label class="settings-toggle"><span><b>Enter to send</b><small>Preference saved on this device</small></span><input id="enter-send-setting" type="checkbox" ${send?"checked":""}></label><button class="primary-setting-btn" id="save-chat-display">Save preferences</button></div>`;
+  $("#save-chat-display").onclick=()=>{const z=$("#chat-font-size").value;localStorage.setItem("hibuddy-chat-font",z);localStorage.setItem("hibuddy-enter-send",String($("#enter-send-setting").checked));document.documentElement.style.setProperty("--chat-font",z+"px");document.querySelectorAll(".bubble").forEach(el=>el.style.fontSize=z+"px");say("Chat preferences saved")};return;
+ }
+ if(which==="notifications"){
+  const supported="Notification" in window,state=supported?Notification.permission:"unsupported";
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Notifications</div><p>Browser permission lets this site show notifications. Background push messages also require Firebase Cloud Messaging setup, a VAPID key and token handling.</p><div class="settings-info"><span>Browser permission</span><b>${esc(state)}</b></div>${state==="default"?'<button class="primary-setting-btn" id="allow-notifications">Allow notifications</button>':state==="denied"?'<p class="settings-note">Permission is blocked. Change it in your browser site settings.</p>':state==="granted"?'<p class="settings-note">Permission granted; background FCM delivery is not confirmed.</p>':'<p class="settings-note">Notifications are not supported by this browser.</p>'}</div>`;
+  const b=$("#allow-notifications");if(b)b.onclick=async()=>{try{const r=await Notification.requestPermission();settingAction("notifications");say("Permission: "+r)}catch(e){say("Could not request permission")}};return;
  }
  if(which==="storage"){
-  let info="Storage estimate is not available in this browser.";
-  if(navigator.storage&&navigator.storage.estimate){navigator.storage.estimate().then(v=>{const used=v.usage||0,quota=v.quota||0;box.innerHTML=`<div class="settings-detail"><b>Storage and data</b><p class="tiny">This website uses approximately ${(used/1048576).toFixed(2)} MB of browser storage out of ${(quota/1048576).toFixed(0)} MB estimated quota. This does not include Firebase cloud data.</p></div>`})}
-  box.innerHTML=`<div class="settings-detail"><b>Storage and data</b><p class="tiny">${info}</p><p class="tiny">Chat messages are stored in your connected Firebase project.</p></div>`;return;
+  box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Storage & data</div><p id="storage-usage">Checking browser storage…</p><div class="settings-info"><span>Cloud messages</span><b>Firebase Firestore</b></div><button class="secondary-setting-btn" id="refresh-storage">Refresh estimate</button><button class="danger-setting-btn" id="clear-app-cache">Clear app cache</button><p class="settings-note">Clearing cache does not delete your Firebase account or cloud messages. The app may need to reload.</p></div>`;
+  const refresh=async()=>{const el=$("#storage-usage");try{if(navigator.storage?.estimate){const x=await navigator.storage.estimate();el.textContent=`Approx. ${((x.usage||0)/1048576).toFixed(2)} MB used of ${((x.quota||0)/1048576).toFixed(0)} MB estimated browser quota.`}else el.textContent="Storage estimate is not supported by this browser."}catch{el.textContent="Storage estimate unavailable."}};refresh();$("#refresh-storage").onclick=refresh;
+  $("#clear-app-cache").onclick=async()=>{if(!confirm("Clear cached app files? Firebase cloud data will remain safe."))return;try{if("caches" in window){for(const key of await caches.keys())if(key.toLowerCase().includes("buddy"))await caches.delete(key)}say("App cache cleared. Reload the app.")}catch(e){say("Could not clear app cache")}};return;
  }
- if(which==="language"){box.innerHTML='<div class="settings-detail"><b>App language</b><p class="tiny">English is the currently available interface language in this build.</p></div>';return}
- if(which==="help"){box.innerHTML='<div class="settings-detail"><b>Help and support</b><p class="tiny">For help, contact the app administrator or reply with the issue details in your project support channel.</p></div>';return}
- if(which==="about"){box.innerHTML='<div class="settings-detail"><b>HI BUDDY</b><p class="tiny">A simple space to connect and chat. Version 1.1</p></div>';return}
+ if(which==="language"){box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Language</div><p>English is the currently implemented interface language. Other languages are not offered until all app screens are translated.</p></div>`;return}
+ if(which==="help"){box.innerHTML=`<div class="settings-detail"><div class="detail-heading">Help & support</div><p>For help, share the screen and exact error message with the app administrator. Never share your password or verification codes.</p></div>`;return}
+ if(which==="about"){box.innerHTML=`<div class="settings-detail"><div class="detail-heading">HI BUDDY</div><p>Compact chat application using your existing Firebase Authentication and Cloud Firestore project.</p><div class="settings-info"><span>Backend</span><b>Firebase Auth + Firestore</b></div><div class="settings-info"><span>Version</span><b>1.2.0</b></div></div>`;return}
 }
 function tab(t){
  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===t));
