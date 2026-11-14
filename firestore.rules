@@ -17,7 +17,7 @@ service cloud.firestore {
         || get(privatePath).data.get('preferences', {}).get('privacy', {}).get('allowNewChats', true) == true;
     }
 
-    // Unique phone and username reservations. Claims cannot be overwritten or deleted by clients.
+    // Unique phone and username reservations. Only the owner may remove their own reservation during account-creation rollback.
     match /accountClaims/{claimId} {
       allow read: if loggedIn() && resource.data.uid == request.auth.uid;
       allow create: if loggedIn()
