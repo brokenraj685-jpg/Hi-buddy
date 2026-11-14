@@ -8,12 +8,14 @@ The app continues to use the existing Firebase project `raj-11988` and Email/Pas
 2. Open **Firestore Database → Rules**.
 3. Open this repository's `firestore.rules` file and copy its complete contents.
 4. Replace the Rules editor contents with that file and click **Publish**.
-5. Test sign-in, chat list loading, opening an existing chat, sending a message, creating a new chat, and blocking/unblocking a test account.
+5. Test sign-in, chat list loading, opening an existing chat, sending a message, creating a new chat, username prefix search, opening a profile, and blocking/unblocking a test account. Test that a duplicate mobile number and duplicate username are rejected.
 
 Do not create a new Firebase project or delete any Firestore collections.
 
 ## What the rules add
 
+- Unique mobile-number and username reservations are stored in `accountClaims/{claimId}`; claims are created once and can only be removed by their owner during rollback.
+- Usernames are searchable by prefix from the public `profiles` directory. Selecting a result opens the public profile, where a new one-to-one chat can be started.
 - A user's block list is stored at `privateUsers/{uid}/blocked/{blockedUid}`.
 - A blocked relationship prevents creation of a new one-to-one chat and prevents sending messages in an existing chat.
 - The private `preferences.privacy.allowNewChats` setting can prevent other users from starting new chats with the account.
