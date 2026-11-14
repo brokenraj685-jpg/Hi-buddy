@@ -278,7 +278,7 @@ import{getFirestore,doc,setDoc,getDoc,collection,query,where,onSnapshot,addDoc,s
 const cfg={apiKey:"AIzaSyASzfkpNVtanzi2XQIBYmvxXPTUcqZ6NBM",authDomain:"raj-11988.firebaseapp.com",databaseURL:"https://raj-11988-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"raj-11988",storageBucket:"raj-11988.firebasestorage.app",messagingSenderId:"1080242151967",appId:"1:1080242151967:web:1cc8fb6fc8a9e94b2e2b2a",measurementId:"G-CPHXNZQFNN"};
 const fb=initializeApp(cfg),auth=getAuth(fb),db=getFirestore(fb),$=s=>document.querySelector(s);
 await setPersistence(auth,browserLocalPersistence);
-let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set();
+let mode="signup",captcha=0,user=null,profile=null,chats=[],active=null,stopChats=null,stopMsgs=null,searchSeq=0,signupGate=null,releaseSignupGate=null,currentCall=null,callPeer=null,localCallStream=null,remoteCallStream=null,stopCallDoc=null,stopRemoteCandidates=null,stopIncomingCalls=null,seenIncomingCalls=new Set(),callRingTimer=null;
 function say(t){let e=$("#toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
 function email(p){return p+"@hibuddy.invalid"}
 function finishSignupGate(){if(releaseSignupGate)releaseSignupGate();releaseSignupGate=null;signupGate=null}
@@ -543,6 +543,7 @@ async function startCall(type){
   attachCallMedia(type==="video");
   const offer=await peer.createOffer();await peer.setLocalDescription(offer);
   await updateDoc(callRef,{offer:{type:offer.type,sdp:offer.sdp}});
+  callRingTimer=setTimeout(async()=>{if(currentCall?.id!==callRef.id)return;try{const latest=await getDoc(callRef);if(latest.exists()&&latest.data().status==="ringing"){await updateDoc(callRef,{status:"ended"});say("No answer")} }catch{}cleanupCall()},45000);
  }catch(e){say("Could not start call: "+err(e));cleanupCall()}
 }
 function listenForIncomingCalls(){
@@ -551,7 +552,7 @@ function listenForIncomingCalls(){
  stopIncomingCalls=onSnapshot(query(collection(db,"calls"),where("calleeUid","==",user.uid),limit(25)),snap=>{
   for(const d of snap.docs){
    const data=d.data();
-   if(data.status==="ringing"&&!currentCall&&!seenIncomingCalls.has(d.id)){
+   if(data.status==="ringing"&&data.offer&&!currentCall&&!seenIncomingCalls.has(d.id)){
     seenIncomingCalls.add(d.id);currentCall={id:d.id,ref:d.ref,role:"callee",type:data.type||"audio",targetUid:data.callerUid};
     showCallPanel(data.type||"audio",data.callerName||"Incoming call","Incoming "+(data.type==="video"?"video":"voice")+" call",data.type==="video",true);
     break;
@@ -585,6 +586,7 @@ async function endCall(){
  cleanupCall();
 }
 function cleanupCall(){
+ if(callRingTimer){clearTimeout(callRingTimer);callRingTimer=null}
  if(stopCallDoc){stopCallDoc();stopCallDoc=null}
  if(stopRemoteCandidates){stopRemoteCandidates();stopRemoteCandidates=null}
  if(callPeer){callPeer.ontrack=null;callPeer.onicecandidate=null;callPeer.close();callPeer=null}
