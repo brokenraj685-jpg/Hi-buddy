@@ -177,6 +177,18 @@ service cloud.firestore {
       allow delete: if false;
 
       match /messages/{messageId} {
+        match /reactions/{reactorUid} {
+          function reactionMember() {
+            return loggedIn() && get(/databases/$(database)/documents/chats/$(chatId)).data.members.hasAny([request.auth.uid]);
+          }
+          allow read: if reactionMember();
+          allow create, update: if reactionMember()
+            && request.auth.uid == reactorUid
+            && request.resource.data.uid == request.auth.uid
+            && request.resource.data.emoji in ['❤️','😂','👍','😮','😢','🔥'];
+          allow delete: if reactionMember() && request.auth.uid == reactorUid;
+        }
+
         function chatMembers() {
           return get(/databases/$(database)/documents/chats/$(chatId)).data.members;
         }
